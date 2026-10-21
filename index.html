@@ -48,9 +48,7 @@
       align-items: center;
       gap: 1rem;
     }
-    .logo-container {
-      justify-self: start;
-    }
+    .logo-container { justify-self: start; }
     .logo-container img {
       max-width: clamp(140px, 20vw, 220px);
       height: auto;
@@ -82,25 +80,16 @@
       white-space: nowrap;
       box-shadow: 0 4px 10px rgba(10, 61, 138, 0.2);
     }
-    /* Ajuste para pantallas donde el título es muy largo y se solapa */
     @media (max-width: 850px) {
       .app-header {
         grid-template-columns: 1fr 1fr;
-        grid-template-areas: 
-          "logo badge"
-          "title title";
+        grid-template-areas: "logo badge" "title title";
         gap: 0.75rem;
         padding-bottom: 1rem;
       }
       .logo-container { grid-area: logo; justify-self: start; }
       .header-badge { grid-area: badge; justify-self: end; }
-      .header-title { 
-        grid-area: title; 
-        justify-self: center; 
-        white-space: normal;
-        margin-top: 0.5rem;
-        font-size: clamp(1.1rem, 4vw, 1.4rem);
-      }
+      .header-title { grid-area: title; justify-self: center; white-space: normal; margin-top: 0.5rem; font-size: clamp(1.1rem, 4vw, 1.4rem); }
     }
     /* ---------- MAIN LAYOUT ---------- */
     .app-main {
@@ -110,10 +99,7 @@
       gap: clamp(1rem, 3vw, 2rem);
     }
     @media (max-width: 900px) {
-      .app-main {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
+      .app-main { grid-template-columns: 1fr; gap: 1.5rem; }
     }
     /* ---------- FORMULARIO ---------- */
     .form-panel {
@@ -159,34 +145,15 @@
       background: #ffffff;
       box-shadow: 0 0 0 4px rgba(10, 61, 138, 0.1);
     }
-    textarea {
-      resize: vertical;
-      min-height: 70px;
-      font-family: inherit;
-    }
-    .char-counter {
-      text-align: right;
-      font-size: 0.75rem;
-      color: #6b7f9e;
-      margin-top: 0.1rem;
-    }
-    input[type="date"] {
-      appearance: none;
-      -webkit-appearance: none;
-      cursor: pointer;
-      color-scheme: light;
-    }
+    textarea { resize: vertical; min-height: 70px; font-family: inherit; }
+    .char-counter { text-align: right; font-size: 0.75rem; color: #6b7f9e; margin-top: 0.1rem; }
+    input[type="date"] { appearance: none; -webkit-appearance: none; cursor: pointer; color-scheme: light; }
     input[type="date"]::-webkit-calendar-picker-indicator {
       cursor: pointer;
       filter: invert(18%) sepia(96%) saturate(2000%) hue-rotate(210deg) brightness(90%) contrast(95%);
     }
     /* ---------- FOTO ---------- */
-    .photo-btn-container {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
+    .photo-btn-container { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .btn-photo {
       background: white;
       border: 2px solid #0a3d8a;
@@ -204,34 +171,15 @@
       max-width: 100%;
     }
     .btn-photo:hover { background: #e6f0ff; }
-    .btn-photo svg {
-      width: 20px;
-      height: 20px;
-      fill: #0a3d8a;
-      flex-shrink: 0;
-    }
-    .photo-preview {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      min-width: 0;
-    }
+    .btn-photo svg { width: 20px; height: 20px; fill: #0a3d8a; flex-shrink: 0; }
+    .photo-preview { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
     .photo-preview img {
-      width: 48px;
-      height: 48px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 2px solid #0a3d8a;
-      flex-shrink: 0;
+      width: 48px; height: 48px; object-fit: cover; border-radius: 8px;
+      border: 2px solid #0a3d8a; flex-shrink: 0;
     }
     .photo-preview span {
-      font-size: 0.8rem;
-      color: #0a3d8a;
-      font-weight: 500;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 150px;
+      font-size: 0.8rem; color: #0a3d8a; font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;
     }
     /* ---------- BOTONES ---------- */
     .btn-primary, .btn-secondary {
@@ -249,34 +197,15 @@
       min-height: 48px;
     }
     .btn-primary {
-      background: #0a3d8a;
-      color: white;
-      border: none;
+      background: #0a3d8a; color: white; border: none;
       box-shadow: 0 6px 14px rgba(10, 61, 138, 0.3);
     }
-    .btn-primary:hover:not(:disabled) {
-      background: #082f6b;
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(10, 61, 138, 0.4);
-    }
+    .btn-primary:hover:not(:disabled) { background: #082f6b; transform: translateY(-1px); box-shadow: 0 10px 20px rgba(10, 61, 138, 0.4); }
     .btn-primary:active:not(:disabled) { transform: translateY(0); }
-    .btn-primary:disabled {
-      background: #a0b8d9;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    .btn-secondary {
-      background: white;
-      color: #0a3d8a;
-      border: 2px solid #0a3d8a;
-    }
+    .btn-primary:disabled { background: #a0b8d9; cursor: not-allowed; box-shadow: none; }
+    .btn-secondary { background: white; color: #0a3d8a; border: 2px solid #0a3d8a; }
     .btn-secondary:hover { background: #e6f0ff; }
-    .button-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-top: 0.5rem;
-    }
+    .button-stack { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem; }
     /* ---------- LISTA HALLAZGOS ---------- */
     .list-panel {
       background: #f5f9ff;
@@ -288,164 +217,76 @@
       min-width: 0;
       max-height: 600px;
     }
-    @media (max-width: 900px) {
-      .list-panel { max-height: none; }
-      .hallazgos-list { max-height: 400px; }
-    }
-    @media (max-width: 480px) {
-      .hallazgos-list { max-height: 320px; }
-    }
+    @media (max-width: 900px) { .list-panel { max-height: none; } .hallazgos-list { max-height: 400px; } }
+    @media (max-width: 480px) { .hallazgos-list { max-height: 320px; } }
     .list-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;
     }
     .list-header h2 {
-      font-size: clamp(1rem, 2.5vw, 1.1rem);
-      color: #0a3d8a;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: clamp(1rem, 2.5vw, 1.1rem); color: #0a3d8a;
+      display: flex; align-items: center; gap: 0.5rem;
     }
     .list-header h2 svg { flex-shrink: 0; }
     .badge-count {
-      background: #0a3d8a;
-      color: white;
-      padding: 0.2rem 0.8rem;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      transition: transform 0.2s;
-      flex-shrink: 0;
+      background: #0a3d8a; color: white; padding: 0.2rem 0.8rem;
+      border-radius: 40px; font-size: 0.8rem; font-weight: 600;
+      transition: transform 0.2s; flex-shrink: 0;
     }
     .hallazgos-list {
-      overflow-y: auto;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding-right: 0.3rem;
-      min-height: 0;
+      overflow-y: auto; flex: 1; display: flex; flex-direction: column;
+      gap: 0.75rem; padding-right: 0.3rem; min-height: 0;
     }
     .hallazgo-item {
-      background: white;
-      border-radius: 14px;
+      background: white; border-radius: 14px;
       padding: clamp(0.7rem, 2vw, 1rem);
       border-left: 5px solid #0a3d8a;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-      min-width: 0;
+      display: flex; gap: 0.75rem; align-items: flex-start; min-width: 0;
     }
     .hallazgo-icon {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      background: #e6f0ff;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #0a3d8a;
-      font-weight: 700;
-      font-size: 0.8rem;
+      flex-shrink: 0; width: 32px; height: 32px; background: #e6f0ff;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      color: #0a3d8a; font-weight: 700; font-size: 0.8rem;
     }
-    .hallazgo-content {
-      flex: 1;
-      font-size: 0.85rem;
-      min-width: 0;
-      word-break: break-word;
-    }
+    .hallazgo-content { flex: 1; font-size: 0.85rem; min-width: 0; word-break: break-word; }
     .hallazgo-content strong {
-      color: #0a3d8a;
-      display: block;
-      font-size: 0.8rem;
-      margin-bottom: 0.15rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: #0a3d8a; display: block; font-size: 0.8rem;
+      margin-bottom: 0.15rem; overflow: hidden; text-overflow: ellipsis;
     }
     .hallazgo-content .fecha-line {
-      display: block;
-      font-size: 0.7rem;
-      color: #6b7f9e;
-      margin-bottom: 0.2rem;
-      font-weight: 500;
+      display: block; font-size: 0.7rem; color: #6b7f9e;
+      margin-bottom: 0.2rem; font-weight: 500;
     }
-    .hallazgo-content p {
-      color: #2d3f5e;
-      line-height: 1.35;
-      overflow-wrap: break-word;
-    }
+    .hallazgo-content p { color: #2d3f5e; line-height: 1.35; overflow-wrap: break-word; }
     .hallazgo-img {
-      width: 36px;
-      height: 36px;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1px solid #cce0ff;
-      flex-shrink: 0;
+      width: 36px; height: 36px; object-fit: cover; border-radius: 6px;
+      border: 1px solid #cce0ff; flex-shrink: 0;
     }
     .empty-state {
-      text-align: center;
-      color: #8da3c7;
-      padding: 2rem 0.5rem;
-      font-size: 0.9rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
+      text-align: center; color: #8da3c7; padding: 2rem 0.5rem;
+      font-size: 0.9rem; display: flex; flex-direction: column;
+      align-items: center; gap: 0.5rem;
     }
-    .empty-state svg {
-      width: 48px;
-      height: 48px;
-      fill: #c2d6f0;
-    }
+    .empty-state svg { width: 48px; height: 48px; fill: #c2d6f0; }
     /* ---------- OVERLAY ---------- */
     .thankyou-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 61, 138, 0.85);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 1rem;
+      position: fixed; inset: 0; background: rgba(10, 61, 138, 0.85);
+      backdrop-filter: blur(4px); display: none; align-items: center;
+      justify-content: center; z-index: 1000; padding: 1rem;
     }
     .thankyou-card {
-      background: white;
-      padding: clamp(1.5rem, 5vw, 2.5rem);
-      border-radius: 32px;
-      max-width: 450px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      background: white; padding: clamp(1.5rem, 5vw, 2.5rem);
+      border-radius: 32px; max-width: 450px; width: 100%;
+      text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.3);
     }
     .thankyou-card svg {
-      width: clamp(56px, 15vw, 70px);
-      height: clamp(56px, 15vw, 70px);
-      fill: #0a3d8a;
-      margin-bottom: 1rem;
+      width: clamp(56px, 15vw, 70px); height: clamp(56px, 15vw, 70px);
+      fill: #0a3d8a; margin-bottom: 1rem;
     }
-    .thankyou-card h2 {
-      color: #0a3d8a;
-      font-size: clamp(1.4rem, 5vw, 1.8rem);
-      margin-bottom: 0.5rem;
-    }
-    .thankyou-card p {
-      color: #2d3f5e;
-      margin-bottom: 1.5rem;
-      line-height: 1.5;
-      font-size: clamp(0.9rem, 2.5vw, 1rem);
-    }
-    .thankyou-card .btn-primary {
-      width: auto;
-      padding: 0.8rem 2.5rem;
-      min-width: 140px;
-    }
+    .thankyou-card h2 { color: #0a3d8a; font-size: clamp(1.4rem, 5vw, 1.8rem); margin-bottom: 0.5rem; }
+    .thankyou-card p { color: #2d3f5e; margin-bottom: 1.5rem; line-height: 1.5; font-size: clamp(0.9rem, 2.5vw, 1rem); }
+    .thankyou-card .btn-primary { width: auto; padding: 0.8rem 2.5rem; min-width: 140px; }
     /* ---------- MÓVILES PEQUEÑOS ---------- */
     @media (max-width: 480px) {
       .app-header { padding: 0.85rem 1rem; }
@@ -474,15 +315,11 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- ENCABEZADO CON LOGO LOCAL, TÍTULO CENTRAL Y BADGE -->
     <header class="app-header">
       <div class="logo-container">
-        <!-- Imagen local: Asegúrate de que 'logoEtec.png' esté en la misma carpeta -->
         <img src="logoEtec.png" alt="ETEC - Soluciones de Ingeniería para el Movimiento de Aguas" />
       </div>
-      
       <h1 class="header-title">Auditoría 5S Planta ETEC</h1>
-      
       <div class="header-badge">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -493,7 +330,6 @@
 
     <div class="app-main">
       <section class="form-panel">
-        <!-- Fecha de Auditoría -->
         <div class="field-group">
           <label>
             <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
@@ -501,7 +337,6 @@
           </label>
           <input type="date" id="fechaInput" required />
         </div>
-
         <div class="field-group">
           <label>
             <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -576,11 +411,10 @@
             </div>
           </div>
         </div>
-
         <div class="button-stack">
           <button class="btn-primary" id="addBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Registrar No Conformidad
+            Nueva No Conformidad
           </button>
           <button class="btn-secondary" id="finishBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a3d8a"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
@@ -618,6 +452,10 @@
 
   <script>
     (function() {
+      // ---------- CONSTANTES DE LOCALSTORAGE ----------
+      const LS_KEY_HALLAZGOS = 'auditoria5s_hallazgos';
+      const LS_KEY_FORM = 'auditoria5s_form_temp';
+
       let hallazgos = [];
       let fotoActualBase64 = null;
       let fotoActualNombre = '';
@@ -643,6 +481,7 @@
       const thankyouOverlay = document.getElementById('thankyouOverlay');
       const closeThankyou = document.getElementById('closeThankyou');
 
+      // ---------- UTILIDADES ----------
       function obtenerFechaActualLocal() {
         const d = new Date();
         const year = d.getFullYear();
@@ -657,15 +496,100 @@
         return `${d}/${m}/${y}`;
       }
 
-      function inicializarFecha() {
-        fechaInput.value = obtenerFechaActualLocal();
+      // ---------- LOCALSTORAGE: HALLAZGOS ----------
+      function guardarHallazgosEnStorage() {
+        try {
+          localStorage.setItem(LS_KEY_HALLAZGOS, JSON.stringify(hallazgos));
+        } catch (e) {
+          console.warn('No se pudo guardar en localStorage:', e);
+        }
       }
-      inicializarFecha();
 
+      function cargarHallazgosDesdeStorage() {
+        try {
+          const data = localStorage.getItem(LS_KEY_HALLAZGOS);
+          if (data) {
+            hallazgos = JSON.parse(data);
+          }
+        } catch (e) {
+          console.warn('No se pudo cargar desde localStorage:', e);
+          hallazgos = [];
+        }
+      }
+
+      // ---------- LOCALSTORAGE: FORMULARIO EN CURSO (TEXTO) ----------
+      function guardarFormularioEnStorage() {
+        try {
+          const formData = {
+            fecha: fechaInput.value,
+            auditor: auditorSelect.value,
+            area: areaSelect.value,
+            s: sSelect.value,
+            ubicacion: ubicacionInput.value,
+            descripcion: descripcionInput.value
+          };
+          localStorage.setItem(LS_KEY_FORM, JSON.stringify(formData));
+        } catch (e) {
+          // Si el formulario excede el espacio (raro sin foto), no hacemos nada
+        }
+      }
+
+      function cargarFormularioDesdeStorage() {
+        try {
+          const data = localStorage.getItem(LS_KEY_FORM);
+          if (data) {
+            const f = JSON.parse(data);
+            if (f.fecha) fechaInput.value = f.fecha;
+            if (f.auditor) auditorSelect.value = f.auditor;
+            if (f.area) areaSelect.value = f.area;
+            if (f.s) sSelect.value = f.s;
+            if (f.ubicacion) {
+              ubicacionInput.value = f.ubicacion;
+              ubicacionCount.textContent = f.ubicacion.length;
+            }
+            if (f.descripcion) descripcionInput.value = f.descripcion;
+          }
+        } catch (e) {
+          console.warn('No se pudo cargar el formulario desde localStorage:', e);
+        }
+      }
+
+      function limpiarStorage() {
+        try {
+          localStorage.removeItem(LS_KEY_HALLAZGOS);
+          localStorage.removeItem(LS_KEY_FORM);
+        } catch (e) { /* ignorar */ }
+      }
+
+      // ---------- INICIALIZACIÓN ----------
+      function inicializar() {
+        // 1. Cargar hallazgos persistidos
+        cargarHallazgosDesdeStorage();
+
+        // 2. Cargar datos del formulario en curso (si existían)
+        cargarFormularioDesdeStorage();
+
+        // 3. Si no hay fecha en el formulario restaurado, poner la actual
+        if (!fechaInput.value) {
+          fechaInput.value = obtenerFechaActualLocal();
+        }
+
+        // 4. Renderizar hallazgos restaurados
+        renderizarHallazgos();
+      }
+
+      // ---------- EVENTOS: GUARDADO AUTOMÁTICO DEL FORMULARIO ----------
+      [fechaInput, auditorSelect, areaSelect, sSelect, ubicacionInput, descripcionInput].forEach(el => {
+        el.addEventListener('input', guardarFormularioEnStorage);
+        el.addEventListener('change', guardarFormularioEnStorage);
+      });
+
+      // Contador de caracteres ubicación
       ubicacionInput.addEventListener('input', function() {
         ubicacionCount.textContent = this.value.length;
       });
 
+      // ---------- FOTO ----------
       photoBtn.addEventListener('click', () => photoInput.click());
       photoInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -686,6 +610,7 @@
         reader.readAsDataURL(file);
       });
 
+      // ---------- VALIDACIÓN ----------
       function validarFormulario() {
         if (!fechaInput.value) { alert('Debe indicar la fecha de la auditoría.'); return false; }
         if (!auditorSelect.value) { alert('Debe seleccionar un auditor.'); return false; }
@@ -709,8 +634,11 @@
         previewImg.src = '';
         photoInput.value = '';
         ubicacionInput.focus();
+        // Actualizar el localStorage del formulario
+        guardarFormularioEnStorage();
       }
 
+      // ---------- RENDERIZADO ----------
       function renderizarHallazgos() {
         hallazgosList.innerHTML = '';
         if (hallazgos.length === 0) {
@@ -737,6 +665,7 @@
         countBadge.textContent = hallazgos.length;
       }
 
+      // ---------- AGREGAR HALLAZGO ----------
       addBtn.addEventListener('click', function() {
         if (!validarFormulario()) return;
         hallazgos.push({
@@ -750,12 +679,17 @@
           fotoNombre: fotoActualNombre,
           fotoMime: fotoActualMime
         });
+
+        // Persistir inmediatamente
+        guardarHallazgosEnStorage();
+
         renderizarHallazgos();
         limpiarFormulario();
         countBadge.style.transform = 'scale(1.3)';
         setTimeout(() => countBadge.style.transform = 'scale(1)', 200);
       });
 
+      // ---------- FINALIZAR AUDITORÍA ----------
       finishBtn.addEventListener('click', async function() {
         if (hallazgos.length === 0) {
           alert('No ha registrado ninguna no conformidad. Agregue al menos una antes de terminar.');
@@ -771,17 +705,21 @@
         }
       });
 
+      // ---------- CERRAR OVERLAY ----------
       closeThankyou.addEventListener('click', function() {
         thankyouOverlay.style.display = 'none';
+        // Limpiar estado y storage
         hallazgos = [];
+        limpiarStorage();
         renderizarHallazgos();
         limpiarFormulario();
         auditorSelect.value = '';
         areaSelect.value = '';
         sSelect.value = '';
-        inicializarFecha();
+        fechaInput.value = obtenerFechaActualLocal();
       });
 
+      // ---------- GENERACIÓN DE EXCEL ----------
       async function generarExcelConImagenes() {
         if (typeof ExcelJS === 'undefined') {
           await new Promise((resolve, reject) => {
@@ -869,7 +807,8 @@
         window.URL.revokeObjectURL(url);
       }
 
-      renderizarHallazgos();
+      // ---------- ARRANCAR ----------
+      inicializar();
     })();
   </script>
 </body>
