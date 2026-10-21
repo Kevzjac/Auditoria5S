@@ -455,6 +455,7 @@
       // ---------- CONSTANTES DE LOCALSTORAGE ----------
       const LS_KEY_HALLAZGOS = 'auditoria5s_hallazgos';
       const LS_KEY_FORM = 'auditoria5s_form_temp';
+      const LS_KEY_FOTO = 'auditoria5s_foto_temp';
 
       let hallazgos = [];
       let fotoActualBase64 = null;
@@ -517,7 +518,7 @@
         }
       }
 
-      // ---------- LOCALSTORAGE: FORMULARIO EN CURSO (TEXTO) ----------
+      // ---------- LOCALSTORAGE: FORMULARIO EN CURSO ----------
       function guardarFormularioEnStorage() {
         try {
           const formData = {
@@ -529,9 +530,7 @@
             descripcion: descripcionInput.value
           };
           localStorage.setItem(LS_KEY_FORM, JSON.stringify(formData));
-        } catch (e) {
-          // Si el formulario excede el espacio (raro sin foto), no hacemos nada
-        }
+        } catch (e) { /* ignorar */ }
       }
 
       function cargarFormularioDesdeStorage() {
@@ -554,27 +553,64 @@
         }
       }
 
+      // ---------- LOCALSTORAGE: FOTO EN CURSO ----------
+      // Se guarda la foto temporal para resistir recargas en móviles
+      function guardarFotoEnStorage() {
+        try {
+          if (fotoActualBase64) {
+            const fotoData = {
+              base64: fotoActualBase64,
+              nombre: fotoActualNombre,
+              mime: fotoActualMime
+            };
+            localStorage.setItem(LS_KEY_FOTO, JSON.stringify(fotoData));
+          } else {
+            localStorage.removeItem(LS_KEY_FOTO);
+          }
+        } catch (e) {
+          // Si la foto es demasiado grande para localStorage, avisamos al usuario
+          console.warn('Foto demasiado grande para localStorage:', e);
+          // No bloqueamos al usuario; la foto se mantiene en memoria
+        }
+      }
+
+      function cargarFotoDesdeStorage() {
+        try {
+          const data = localStorage.getItem(LS_KEY_FOTO);
+          if (data) {
+            const f = JSON.parse(data);
+            if (f.base64) {
+              fotoActualBase64 = f.base64;
+              fotoActualNombre = f.nombre || 'foto.jpg';
+              fotoActualMime = f.mime || 'image/jpeg';
+              previewImg.src = fotoActualBase64;
+              photoNameSpan.textContent = fotoActualNombre;
+              photoPreview.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          console.warn('No se pudo cargar la foto desde localStorage:', e);
+        }
+      }
+
       function limpiarStorage() {
         try {
           localStorage.removeItem(LS_KEY_HALLAZGOS);
           localStorage.removeItem(LS_KEY_FORM);
+          localStorage.removeItem(LS_KEY_FOTO);
         } catch (e) { /* ignorar */ }
       }
 
       // ---------- INICIALIZACIÓN ----------
       function inicializar() {
-        // 1. Cargar hallazgos persistidos
         cargarHallazgosDesdeStorage();
-
-        // 2. Cargar datos del formulario en curso (si existían)
         cargarFormularioDesdeStorage();
+        cargarFotoDesdeStorage();
 
-        // 3. Si no hay fecha en el formulario restaurado, poner la actual
         if (!fechaInput.value) {
           fechaInput.value = obtenerFechaActualLocal();
         }
 
-        // 4. Renderizar hallazgos restaurados
         renderizarHallazgos();
       }
 
@@ -584,7 +620,6 @@
         el.addEventListener('change', guardarFormularioEnStorage);
       });
 
-      // Contador de caracteres ubicación
       ubicacionInput.addEventListener('input', function() {
         ubicacionCount.textContent = this.value.length;
       });
@@ -606,6 +641,8 @@
           previewImg.src = fotoActualBase64;
           photoNameSpan.textContent = file.name;
           photoPreview.classList.remove('hidden');
+          // Guardar inmediatamente para resistir recargas del móvil
+          guardarFotoEnStorage();
         };
         reader.readAsDataURL(file);
       });
@@ -634,7 +671,8 @@
         previewImg.src = '';
         photoInput.value = '';
         ubicacionInput.focus();
-        // Actualizar el localStorage del formulario
+        // Limpiar la foto temporal y el formulario del storage
+        guardarFotoEnStorage();
         guardarFormularioEnStorage();
       }
 
@@ -680,9 +718,7 @@
           fotoMime: fotoActualMime
         });
 
-        // Persistir inmediatamente
         guardarHallazgosEnStorage();
-
         renderizarHallazgos();
         limpiarFormulario();
         countBadge.style.transform = 'scale(1.3)';
@@ -708,7 +744,6 @@
       // ---------- CERRAR OVERLAY ----------
       closeThankyou.addEventListener('click', function() {
         thankyouOverlay.style.display = 'none';
-        // Limpiar estado y storage
         hallazgos = [];
         limpiarStorage();
         renderizarHallazgos();
