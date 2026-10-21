@@ -443,7 +443,7 @@
         <div class="button-stack">
           <button class="btn-primary" id="addBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Registrar No Conformidad
+            Nueva No Conformidad
           </button>
           <button class="btn-secondary" id="finishBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a3d8a"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
@@ -531,8 +531,8 @@
         return `${d}/${m}/${y}`;
       }
 
-      // ---------- REDIMENSIONAR IMAGEN ANTES DE GUARDAR ----------
-      // Esto reduce el peso drásticamente (de MB a KB) para que quepa en localStorage
+      // ---------- REDIMENSIONAR IMAGEN AL MÍNIMO ----------
+      // 600x600 px, calidad 0.5. Una foto de 5MB pesará ~20-40 KB.
       function redimensionarImagen(file, maxWidth, maxHeight, callback) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -541,7 +541,6 @@
             let width = img.width;
             let height = img.height;
 
-            // Calcular nuevas dimensiones manteniendo proporción
             if (width > height) {
               if (width > maxWidth) {
                 height = Math.round((height * maxWidth) / width);
@@ -559,8 +558,8 @@
             const ctx = resizeCanvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Calidad 0.7 (JPEG) reduce aún más sin perder nitidez visible
-            const nuevoBase64 = resizeCanvas.toDataURL('image/jpeg', 0.7);
+            // Calidad 0.5 para reducir drásticamente el peso
+            const nuevoBase64 = resizeCanvas.toDataURL('image/jpeg', 0.5);
             callback(nuevoBase64);
           };
           img.onerror = function() {
@@ -706,12 +705,13 @@
           return;
         }
 
-        // Mostrar un mensaje de que se está procesando (opcional para dar feedback)
+        // Feedback visual
         photoNameSpan.textContent = 'Procesando...';
         photoPreview.classList.remove('hidden');
+        previewImg.src = ''; // Limpiar preview anterior
 
-        // Redimensionar a máximo 800x800 px con calidad 0.7
-        redimensionarImagen(file, 800, 800, function(base64Reducido) {
+        // Redimensionar a máximo 600x600 px con calidad 0.5
+        redimensionarImagen(file, 600, 600, function(base64Reducido) {
           if (base64Reducido) {
             fotoActualBase64 = base64Reducido;
             fotoActualNombre = file.name;
@@ -721,7 +721,6 @@
             photoPreview.classList.remove('hidden');
             guardarFotoEnStorage();
           } else {
-            // Si falla, ocultar el preview
             photoPreview.classList.add('hidden');
             photoInput.value = '';
           }
@@ -844,7 +843,6 @@
         fotoActualNombre = '';
         fotoActualMime = '';
         
-        // Limpiar UI
         renderizarHallazgos();
         previewImg.src = '';
         photoNameSpan.textContent = 'foto.jpg';
