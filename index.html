@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Auditoría 5S - Planta ETEC</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    /* ---------- RESET Y BASE ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+    body {
+      background: linear-gradient(135deg, #e6f0ff 0%, #ffffff 100%);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(0.5rem, 2vw, 1.5rem);
+      padding-top: max(clamp(0.5rem, 2vw, 1.5rem), env(safe-area-inset-top));
+    }
+    .app-container {
+      max-width: 1100px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: clamp(16px, 3vw, 24px);
+      box-shadow: 0 20px 40px rgba(0, 40, 100, 0.15);
+      overflow: hidden;
+      border: 1px solid #cce0ff;
+    }
+    /* ---------- HEADER ---------- */
+    .app-header {
+      background: #ffffff;
+      padding: clamp(0.9rem, 2vw, 1.25rem) clamp(1rem, 3vw, 2rem);
+      border-bottom: 2px solid #0a3d8a;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo-container {
+      justify-self: start;
+    }
+    .logo-container img {
+      max-width: clamp(140px, 20vw, 220px);
+      height: auto;
+      max-height: 65px;
+      object-fit: contain;
+      display: block;
+    }
+    .header-title {
+      justify-self: center;
+      text-align: center;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-weight: 700;
+      color: #0a3d8a;
+      line-height: 1.2;
+      margin: 0;
+      padding: 0 0.5rem;
+      white-space: nowrap;
+    }
+    .header-badge {
+      justify-self: end;
+      background: #0a3d8a;
+      color: white;
+      padding: 0.4rem 0.9rem;
+      border-radius: 40px;
+      font-size: clamp(0.75rem, 1.8vw, 0.9rem);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(10, 61, 138, 0.2);
+    }
+    /* Ajuste para pantallas donde el título es muy largo y se solapa */
+    @media (max-width: 850px) {
+      .app-header {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+          "logo badge"
+          "title title";
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+      }
+      .logo-container { grid-area: logo; justify-self: start; }
+      .header-badge { grid-area: badge; justify-self: end; }
+      .header-title { 
+        grid-area: title; 
+        justify-self: center; 
+        white-space: normal;
+        margin-top: 0.5rem;
+        font-size: clamp(1.1rem, 4vw, 1.4rem);
+      }
+    }
+    /* ---------- MAIN LAYOUT ---------- */
+    .app-main {
+      padding: clamp(1rem, 3vw, 2rem);
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: clamp(1rem, 3vw, 2rem);
+    }
+    @media (max-width: 900px) {
+      .app-main {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+    /* ---------- FORMULARIO ---------- */
+    .form-panel {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.9rem, 2.5vw, 1.25rem);
+      min-width: 0;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-width: 0;
+    }
+    .field-group label {
+      font-weight: 600;
+      font-size: clamp(0.82rem, 2vw, 0.9rem);
+      color: #0a3d8a;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .field-group label svg {
+      width: clamp(16px, 3vw, 18px);
+      height: clamp(16px, 3vw, 18px);
+      fill: #0a3d8a;
+      flex-shrink: 0;
+    }
+    select, input, textarea {
+      width: 100%;
+      padding: clamp(0.65rem, 2.5vw, 0.85rem) clamp(0.8rem, 3vw, 1rem);
+      border: 2px solid #d9e6ff;
+      border-radius: 12px;
+      font-size: max(16px, clamp(0.9rem, 2.5vw, 1rem));
+      background: #f8fbff;
+      transition: all 0.2s;
+      outline: none;
+      color: #1a2b4c;
+      font-weight: 500;
+    }
+    select:focus, input:focus, textarea:focus {
+      border-color: #0a3d8a;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(10, 61, 138, 0.1);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+      font-family: inherit;
+    }
+    .char-counter {
+      text-align: right;
+      font-size: 0.75rem;
+      color: #6b7f9e;
+      margin-top: 0.1rem;
+    }
+    input[type="date"] {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      color-scheme: light;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      filter: invert(18%) sepia(96%) saturate(2000%) hue-rotate(210deg) brightness(90%) contrast(95%);
+    }
+    /* ---------- FOTO ---------- */
+    .photo-btn-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .btn-photo {
+      background: white;
+      border: 2px solid #0a3d8a;
+      color: #0a3d8a;
+      padding: clamp(0.6rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: 0.2s;
+      width: fit-content;
+      max-width: 100%;
+    }
+    .btn-photo:hover { background: #e6f0ff; }
+    .btn-photo svg {
+      width: 20px;
+      height: 20px;
+      fill: #0a3d8a;
+      flex-shrink: 0;
+    }
+    .photo-preview {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+    .photo-preview img {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #0a3d8a;
+      flex-shrink: 0;
+    }
+    .photo-preview span {
+      font-size: 0.8rem;
+      color: #0a3d8a;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 150px;
+    }
+    /* ---------- BOTONES ---------- */
+    .btn-primary, .btn-secondary {
+      padding: clamp(0.75rem, 2.5vw, 0.95rem) 1.5rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: clamp(0.9rem, 2.3vw, 1rem);
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      min-height: 48px;
+    }
+    .btn-primary {
+      background: #0a3d8a;
+      color: white;
+      border: none;
+      box-shadow: 0 6px 14px rgba(10, 61, 138, 0.3);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #082f6b;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(10, 61, 138, 0.4);
+    }
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
+    .btn-primary:disabled {
+      background: #a0b8d9;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-secondary {
+      background: white;
+      color: #0a3d8a;
+      border: 2px solid #0a3d8a;
+    }
+    .btn-secondary:hover { background: #e6f0ff; }
+    .button-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    /* ---------- LISTA HALLAZGOS ---------- */
+    .list-panel {
+      background: #f5f9ff;
+      border-radius: 20px;
+      padding: clamp(1rem, 3vw, 1.5rem);
+      border: 1px solid #d9e6ff;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      max-height: 600px;
+    }
+    @media (max-width: 900px) {
+      .list-panel { max-height: none; }
+      .hallazgos-list { max-height: 400px; }
+    }
+    @media (max-width: 480px) {
+      .hallazgos-list { max-height: 320px; }
+    }
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .list-header h2 {
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
+      color: #0a3d8a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .list-header h2 svg { flex-shrink: 0; }
+    .badge-count {
+      background: #0a3d8a;
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .hallazgos-list {
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-right: 0.3rem;
+      min-height: 0;
+    }
+    .hallazgo-item {
+      background: white;
+      border-radius: 14px;
+      padding: clamp(0.7rem, 2vw, 1rem);
+      border-left: 5px solid #0a3d8a;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      min-width: 0;
+    }
+    .hallazgo-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: #e6f0ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a3d8a;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .hallazgo-content {
+      flex: 1;
+      font-size: 0.85rem;
+      min-width: 0;
+      word-break: break-word;
+    }
+    .hallazgo-content strong {
+      color: #0a3d8a;
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 0.15rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hallazgo-content .fecha-line {
+      display: block;
+      font-size: 0.7rem;
+      color: #6b7f9e;
+      margin-bottom: 0.2rem;
+      font-weight: 500;
+    }
+    .hallazgo-content p {
+      color: #2d3f5e;
+      line-height: 1.35;
+      overflow-wrap: break-word;
+    }
+    .hallazgo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #cce0ff;
+      flex-shrink: 0;
+    }
+    .empty-state {
+      text-align: center;
+      color: #8da3c7;
+      padding: 2rem 0.5rem;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      fill: #c2d6f0;
+    }
+    /* ---------- OVERLAY ---------- */
+    .thankyou-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 61, 138, 0.85);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .thankyou-card {
+      background: white;
+      padding: clamp(1.5rem, 5vw, 2.5rem);
+      border-radius: 32px;
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    }
+    .thankyou-card svg {
+      width: clamp(56px, 15vw, 70px);
+      height: clamp(56px, 15vw, 70px);
+      fill: #0a3d8a;
+      margin-bottom: 1rem;
+    }
+    .thankyou-card h2 {
+      color: #0a3d8a;
+      font-size: clamp(1.4rem, 5vw, 1.8rem);
+      margin-bottom: 0.5rem;
+    }
+    .thankyou-card p {
+      color: #2d3f5e;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+    }
+    .thankyou-card .btn-primary {
+      width: auto;
+      padding: 0.8rem 2.5rem;
+      min-width: 140px;
+    }
+    /* ---------- MÓVILES PEQUEÑOS ---------- */
+    @media (max-width: 480px) {
+      .app-header { padding: 0.85rem 1rem; }
+      .logo-container img { max-width: 160px; max-height: 50px; }
+      .header-badge { padding: 0.35rem 0.6rem; font-size: 0.7rem; }
+      .header-badge svg { width: 14px; height: 14px; }
+      .hallazgo-img { width: 32px; height: 32px; }
+      .hallazgo-icon { width: 28px; height: 28px; font-size: 0.75rem; }
+      .photo-preview span { max-width: 100px; font-size: 0.75rem; }
+    }
+    @media (max-width: 360px) {
+      .header-badge span { display: none; }
+      .header-badge { padding: 0.35rem 0.5rem; }
+    }
+    @media (max-height: 500px) and (orientation: landscape) {
+      .app-main { padding: 1rem; }
+      .list-panel { max-height: none; }
+      .hallazgos-list { max-height: 200px; }
+    }
+    /* ---------- UTILIDADES ---------- */
+    .hidden { display: none !important; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #e6f0ff; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #0a3d8a; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- ENCABEZADO CON LOGO LOCAL, TÍTULO CENTRAL Y BADGE -->
+    <header class="app-header">
+      <div class="logo-container">
+        <!-- Imagen local: Asegúrate de que 'logoEtec.png' esté en la misma carpeta -->
+        <img src="logoEtec.png" alt="ETEC - Soluciones de Ingeniería para el Movimiento de Aguas" />
+      </div>
+      
+      <h1 class="header-title">Auditoría 5S Planta ETEC</h1>
+      
+      <div class="header-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <span class="badge-text">Hallazgos</span>
+      </div>
+    </header>
+
+    <div class="app-main">
+      <section class="form-panel">
+        <!-- Fecha de Auditoría -->
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Fecha de Auditoría
+          </label>
+          <input type="date" id="fechaInput" required />
+        </div>
+
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Auditor
+          </label>
+          <select id="auditorSelect">
+            <option value="">Seleccione auditor</option>
+            <option>Nombre 1</option>
+            <option>Nombre 2</option>
+            <option>Nombre 3</option>
+            <option>Nombre 4</option>
+            <option>Nombre 5</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Área auditada
+          </label>
+          <select id="areaSelect">
+            <option value="">Seleccione área</option>
+            <option>Área 1</option>
+            <option>Área 2</option>
+            <option>Área 3</option>
+            <option>Área 4</option>
+            <option>Área 5</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            La *S* Afectada
+          </label>
+          <select id="sSelect">
+            <option value="">Seleccione S</option>
+            <option>S1 Clasificar</option>
+            <option>S2 Ordenar</option>
+            <option>S3 Limpiar</option>
+            <option>S4 Estandarizar</option>
+            <option>S5 Cultura</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Ubicación de la No Conformidad
+          </label>
+          <input type="text" id="ubicacionInput" maxlength="30" placeholder="Ej: Pasillo central, estante A3" />
+          <div class="char-counter"><span id="ubicacionCount">0</span>/30</div>
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            Descripción de la No Conformidad
+          </label>
+          <textarea id="descripcionInput" rows="3" placeholder="Describa el hallazgo..."></textarea>
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+            Foto Evidencia
+          </label>
+          <div class="photo-btn-container">
+            <button type="button" class="btn-photo" id="photoBtn">
+              <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+              Tomar / Subir Foto
+            </button>
+            <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden" />
+            <div class="photo-preview hidden" id="photoPreview">
+              <img id="previewImg" src="" alt="Evidencia" />
+              <span id="photoName">foto.jpg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-stack">
+          <button class="btn-primary" id="addBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Registrar No Conformidad
+          </button>
+          <button class="btn-secondary" id="finishBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a3d8a"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Terminar Auditoría
+          </button>
+        </div>
+      </section>
+
+      <aside class="list-panel">
+        <div class="list-header">
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a3d8a"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            Hallazgos registrados
+          </h2>
+          <span class="badge-count" id="countBadge">0</span>
+        </div>
+        <div class="hallazgos-list" id="hallazgosList">
+          <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <span>Aún no hay no conformidades registradas.</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="thankyou-overlay" id="thankyouOverlay">
+    <div class="thankyou-card">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      <h2>¡Auditoría finalizada!</h2>
+      <p>Gracias por su compromiso con la mejora continua en Planta ETEC. El archivo Excel con los hallazgos se descargará automáticamente.</p>
+      <button class="btn-primary" id="closeThankyou">Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      let hallazgos = [];
+      let fotoActualBase64 = null;
+      let fotoActualNombre = '';
+      let fotoActualMime = '';
+
+      const fechaInput = document.getElementById('fechaInput');
+      const auditorSelect = document.getElementById('auditorSelect');
+      const areaSelect = document.getElementById('areaSelect');
+      const sSelect = document.getElementById('sSelect');
+      const ubicacionInput = document.getElementById('ubicacionInput');
+      const ubicacionCount = document.getElementById('ubicacionCount');
+      const descripcionInput = document.getElementById('descripcionInput');
+      const photoBtn = document.getElementById('photoBtn');
+      const photoInput = document.getElementById('photoInput');
+      const photoPreview = document.getElementById('photoPreview');
+      const previewImg = document.getElementById('previewImg');
+      const photoNameSpan = document.getElementById('photoName');
+      const addBtn = document.getElementById('addBtn');
+      const finishBtn = document.getElementById('finishBtn');
+      const hallazgosList = document.getElementById('hallazgosList');
+      const emptyState = document.getElementById('emptyState');
+      const countBadge = document.getElementById('countBadge');
+      const thankyouOverlay = document.getElementById('thankyouOverlay');
+      const closeThankyou = document.getElementById('closeThankyou');
+
+      function obtenerFechaActualLocal() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function formatearFechaVisible(fechaISO) {
+        if (!fechaISO) return '';
+        const [y, m, d] = fechaISO.split('-');
+        return `${d}/${m}/${y}`;
+      }
+
+      function inicializarFecha() {
+        fechaInput.value = obtenerFechaActualLocal();
+      }
+      inicializarFecha();
+
+      ubicacionInput.addEventListener('input', function() {
+        ubicacionCount.textContent = this.value.length;
+      });
+
+      photoBtn.addEventListener('click', () => photoInput.click());
+      photoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          alert('Por favor seleccione un archivo de imagen válido.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          fotoActualBase64 = ev.target.result;
+          fotoActualNombre = file.name;
+          fotoActualMime = file.type;
+          previewImg.src = fotoActualBase64;
+          photoNameSpan.textContent = file.name;
+          photoPreview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function validarFormulario() {
+        if (!fechaInput.value) { alert('Debe indicar la fecha de la auditoría.'); return false; }
+        if (!auditorSelect.value) { alert('Debe seleccionar un auditor.'); return false; }
+        if (!areaSelect.value) { alert('Debe seleccionar un área.'); return false; }
+        if (!sSelect.value) { alert('Debe seleccionar la S afectada.'); return false; }
+        if (!ubicacionInput.value.trim()) { alert('Debe ingresar la ubicación de la no conformidad.'); return false; }
+        if (ubicacionInput.value.trim().length > 30) { alert('La ubicación no puede exceder 30 caracteres.'); return false; }
+        if (!descripcionInput.value.trim()) { alert('Debe ingresar la descripción de la no conformidad.'); return false; }
+        if (!fotoActualBase64) { alert('Debe adjuntar una foto como evidencia.'); return false; }
+        return true;
+      }
+
+      function limpiarFormulario() {
+        ubicacionInput.value = '';
+        ubicacionCount.textContent = '0';
+        descripcionInput.value = '';
+        fotoActualBase64 = null;
+        fotoActualNombre = '';
+        fotoActualMime = '';
+        photoPreview.classList.add('hidden');
+        previewImg.src = '';
+        photoInput.value = '';
+        ubicacionInput.focus();
+      }
+
+      function renderizarHallazgos() {
+        hallazgosList.innerHTML = '';
+        if (hallazgos.length === 0) {
+          hallazgosList.appendChild(emptyState);
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+          hallazgos.forEach((h) => {
+            const item = document.createElement('div');
+            item.className = 'hallazgo-item';
+            const sText = h.s.split(' ')[0];
+            item.innerHTML = `
+              <div class="hallazgo-icon">${sText}</div>
+              <div class="hallazgo-content">
+                <span class="fecha-line">📅 ${formatearFechaVisible(h.fecha)}</span>
+                <strong>${h.area} · ${h.ubicacion}</strong>
+                <p>${h.descripcion}</p>
+              </div>
+              ${h.fotoBase64 ? `<img class="hallazgo-img" src="${h.fotoBase64}" alt="Evidencia" />` : ''}
+            `;
+            hallazgosList.appendChild(item);
+          });
+        }
+        countBadge.textContent = hallazgos.length;
+      }
+
+      addBtn.addEventListener('click', function() {
+        if (!validarFormulario()) return;
+        hallazgos.push({
+          fecha: fechaInput.value,
+          auditor: auditorSelect.value,
+          area: areaSelect.value,
+          s: sSelect.value,
+          ubicacion: ubicacionInput.value.trim(),
+          descripcion: descripcionInput.value.trim(),
+          fotoBase64: fotoActualBase64,
+          fotoNombre: fotoActualNombre,
+          fotoMime: fotoActualMime
+        });
+        renderizarHallazgos();
+        limpiarFormulario();
+        countBadge.style.transform = 'scale(1.3)';
+        setTimeout(() => countBadge.style.transform = 'scale(1)', 200);
+      });
+
+      finishBtn.addEventListener('click', async function() {
+        if (hallazgos.length === 0) {
+          alert('No ha registrado ninguna no conformidad. Agregue al menos una antes de terminar.');
+          return;
+        }
+        if (!confirm(`¿Está seguro de terminar la auditoría? Se han registrado ${hallazgos.length} no conformidad(es).`)) return;
+        try {
+          await generarExcelConImagenes();
+          thankyouOverlay.style.display = 'flex';
+        } catch (error) {
+          console.error(error);
+          alert('Ocurrió un error al generar el archivo Excel. Por favor intente de nuevo.');
+        }
+      });
+
+      closeThankyou.addEventListener('click', function() {
+        thankyouOverlay.style.display = 'none';
+        hallazgos = [];
+        renderizarHallazgos();
+        limpiarFormulario();
+        auditorSelect.value = '';
+        areaSelect.value = '';
+        sSelect.value = '';
+        inicializarFecha();
+      });
+
+      async function generarExcelConImagenes() {
+        if (typeof ExcelJS === 'undefined') {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Hallazgos');
+
+        worksheet.columns = [
+          { header: 'N°', key: 'num', width: 6 },
+          { header: 'Fecha Auditoría', key: 'fecha', width: 16 },
+          { header: 'Auditor', key: 'auditor', width: 18 },
+          { header: 'Área', key: 'area', width: 14 },
+          { header: 'S Afectada', key: 's', width: 20 },
+          { header: 'Ubicación', key: 'ubicacion', width: 32 },
+          { header: 'Descripción', key: 'descripcion', width: 45 },
+          { header: 'Foto Evidencia', key: 'foto', width: 25 }
+        ];
+
+        worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0A3D8A' } };
+        worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+        for (let i = 0; i < hallazgos.length; i++) {
+          const h = hallazgos[i];
+          const row = worksheet.addRow({
+            num: i + 1,
+            fecha: formatearFechaVisible(h.fecha),
+            auditor: h.auditor,
+            area: h.area,
+            s: h.s,
+            ubicacion: h.ubicacion,
+            descripcion: h.descripcion,
+            foto: ''
+          });
+          if (h.fotoBase64) {
+            try {
+              const base64Data = h.fotoBase64.split(',')[1];
+              const mime = h.fotoBase64.split(';')[0].split(':')[1];
+              let extension = 'png';
+              if (mime.includes('jpeg') || mime.includes('jpg')) extension = 'jpeg';
+              const imageId = workbook.addImage({ base64: base64Data, extension: extension });
+              worksheet.addImage(imageId, {
+                tl: { col: 7, row: i + 1 },
+                ext: { width: 80, height: 60 },
+                editAs: 'oneCell'
+              });
+              worksheet.getRow(i + 2).height = 65;
+            } catch (imgError) {
+              console.warn('Error al insertar imagen:', imgError);
+              row.getCell('foto').value = 'Error al cargar imagen';
+            }
+          } else {
+            row.getCell('foto').value = 'Sin imagen';
+          }
+        }
+
+        worksheet.eachRow((row) => {
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FFCCE0FF' } },
+              left: { style: 'thin', color: { argb: 'FFCCE0FF' } },
+              bottom: { style: 'thin', color: { argb: 'FFCCE0FF' } },
+              right: { style: 'thin', color: { argb: 'FFCCE0FF' } }
+            };
+            cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+          });
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Auditoria_5S_ETEC_${fechaInput.value || new Date().toISOString().slice(0,10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+
+      renderizarHallazgos();
+    })();
+  </script>
+</body>
+</html>
