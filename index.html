@@ -67,8 +67,31 @@
       padding: 0 0.5rem;
       white-space: nowrap;
     }
-    .header-badge {
+    .header-actions {
       justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .btn-clear {
+      background: #f8fbff;
+      color: #d32f2f;
+      border: 1.5px solid #ffcdd2;
+      padding: 0.4rem 0.8rem;
+      border-radius: 40px;
+      font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: 0.2s;
+    }
+    .btn-clear:hover { background: #ffebee; border-color: #ef9a9a; }
+    .btn-clear svg { fill: #d32f2f; width: 14px; height: 14px; }
+    .header-badge {
       background: #0a3d8a;
       color: white;
       padding: 0.4rem 0.9rem;
@@ -83,12 +106,12 @@
     @media (max-width: 850px) {
       .app-header {
         grid-template-columns: 1fr 1fr;
-        grid-template-areas: "logo badge" "title title";
+        grid-template-areas: "logo actions" "title title";
         gap: 0.75rem;
         padding-bottom: 1rem;
       }
       .logo-container { grid-area: logo; justify-self: start; }
-      .header-badge { grid-area: badge; justify-self: end; }
+      .header-actions { grid-area: actions; justify-self: end; }
       .header-title { grid-area: title; justify-self: center; white-space: normal; margin-top: 0.5rem; font-size: clamp(1.1rem, 4vw, 1.4rem); }
     }
     /* ---------- MAIN LAYOUT ---------- */
@@ -320,11 +343,17 @@
         <img src="logoEtec.png" alt="ETEC - Soluciones de Ingeniería para el Movimiento de Aguas" />
       </div>
       <h1 class="header-title">Auditoría 5S Planta ETEC</h1>
-      <div class="header-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-        <span class="badge-text">Hallazgos</span>
+      <div class="header-actions">
+        <button class="btn-clear" id="clearAllBtn" title="Limpiar todos los datos guardados y empezar de cero">
+          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          Limpiar Todo
+        </button>
+        <div class="header-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span class="badge-text">Hallazgos</span>
+        </div>
       </div>
     </header>
 
@@ -441,6 +470,9 @@
     </div>
   </div>
 
+  <!-- Canvas oculto para redimensionar imágenes -->
+  <canvas id="resizeCanvas" class="hidden"></canvas>
+
   <div class="thankyou-overlay" id="thankyouOverlay">
     <div class="thankyou-card">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -481,6 +513,8 @@
       const countBadge = document.getElementById('countBadge');
       const thankyouOverlay = document.getElementById('thankyouOverlay');
       const closeThankyou = document.getElementById('closeThankyou');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+      const resizeCanvas = document.getElementById('resizeCanvas');
 
       // ---------- UTILIDADES ----------
       function obtenerFechaActualLocal() {
@@ -497,28 +531,70 @@
         return `${d}/${m}/${y}`;
       }
 
-      // ---------- LOCALSTORAGE: HALLAZGOS ----------
+      // ---------- REDIMENSIONAR IMAGEN ANTES DE GUARDAR ----------
+      // Esto reduce el peso drásticamente (de MB a KB) para que quepa en localStorage
+      function redimensionarImagen(file, maxWidth, maxHeight, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            let width = img.width;
+            let height = img.height;
+
+            // Calcular nuevas dimensiones manteniendo proporción
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+
+            resizeCanvas.width = width;
+            resizeCanvas.height = height;
+            const ctx = resizeCanvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Calidad 0.7 (JPEG) reduce aún más sin perder nitidez visible
+            const nuevoBase64 = resizeCanvas.toDataURL('image/jpeg', 0.7);
+            callback(nuevoBase64);
+          };
+          img.onerror = function() {
+            alert('No se pudo procesar la imagen. Intente con otra foto.');
+            callback(null);
+          };
+          img.src = e.target.result;
+        };
+        reader.onerror = function() {
+          alert('No se pudo leer el archivo. Intente de nuevo.');
+          callback(null);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // ---------- LOCALSTORAGE ----------
       function guardarHallazgosEnStorage() {
         try {
           localStorage.setItem(LS_KEY_HALLAZGOS, JSON.stringify(hallazgos));
         } catch (e) {
-          console.warn('No se pudo guardar en localStorage:', e);
+          console.warn('No se pudo guardar hallazgos:', e);
         }
       }
 
       function cargarHallazgosDesdeStorage() {
         try {
           const data = localStorage.getItem(LS_KEY_HALLAZGOS);
-          if (data) {
-            hallazgos = JSON.parse(data);
-          }
+          if (data) hallazgos = JSON.parse(data);
         } catch (e) {
-          console.warn('No se pudo cargar desde localStorage:', e);
+          console.warn('No se pudo cargar hallazgos:', e);
           hallazgos = [];
         }
       }
 
-      // ---------- LOCALSTORAGE: FORMULARIO EN CURSO ----------
       function guardarFormularioEnStorage() {
         try {
           const formData = {
@@ -549,12 +625,10 @@
             if (f.descripcion) descripcionInput.value = f.descripcion;
           }
         } catch (e) {
-          console.warn('No se pudo cargar el formulario desde localStorage:', e);
+          console.warn('No se pudo cargar el formulario:', e);
         }
       }
 
-      // ---------- LOCALSTORAGE: FOTO EN CURSO ----------
-      // Se guarda la foto temporal para resistir recargas en móviles
       function guardarFotoEnStorage() {
         try {
           if (fotoActualBase64) {
@@ -568,9 +642,7 @@
             localStorage.removeItem(LS_KEY_FOTO);
           }
         } catch (e) {
-          // Si la foto es demasiado grande para localStorage, avisamos al usuario
-          console.warn('Foto demasiado grande para localStorage:', e);
-          // No bloqueamos al usuario; la foto se mantiene en memoria
+          console.warn('No se pudo guardar la foto temporal:', e);
         }
       }
 
@@ -589,7 +661,7 @@
             }
           }
         } catch (e) {
-          console.warn('No se pudo cargar la foto desde localStorage:', e);
+          console.warn('No se pudo cargar la foto temporal:', e);
         }
       }
 
@@ -624,7 +696,7 @@
         ubicacionCount.textContent = this.value.length;
       });
 
-      // ---------- FOTO ----------
+      // ---------- FOTO: LECTURA Y REDIMENSIONADO ----------
       photoBtn.addEventListener('click', () => photoInput.click());
       photoInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -633,18 +705,27 @@
           alert('Por favor seleccione un archivo de imagen válido.');
           return;
         }
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          fotoActualBase64 = ev.target.result;
-          fotoActualNombre = file.name;
-          fotoActualMime = file.type;
-          previewImg.src = fotoActualBase64;
-          photoNameSpan.textContent = file.name;
-          photoPreview.classList.remove('hidden');
-          // Guardar inmediatamente para resistir recargas del móvil
-          guardarFotoEnStorage();
-        };
-        reader.readAsDataURL(file);
+
+        // Mostrar un mensaje de que se está procesando (opcional para dar feedback)
+        photoNameSpan.textContent = 'Procesando...';
+        photoPreview.classList.remove('hidden');
+
+        // Redimensionar a máximo 800x800 px con calidad 0.7
+        redimensionarImagen(file, 800, 800, function(base64Reducido) {
+          if (base64Reducido) {
+            fotoActualBase64 = base64Reducido;
+            fotoActualNombre = file.name;
+            fotoActualMime = 'image/jpeg';
+            previewImg.src = fotoActualBase64;
+            photoNameSpan.textContent = file.name;
+            photoPreview.classList.remove('hidden');
+            guardarFotoEnStorage();
+          } else {
+            // Si falla, ocultar el preview
+            photoPreview.classList.add('hidden');
+            photoInput.value = '';
+          }
+        });
       });
 
       // ---------- VALIDACIÓN ----------
@@ -671,7 +752,6 @@
         previewImg.src = '';
         photoInput.value = '';
         ubicacionInput.focus();
-        // Limpiar la foto temporal y el formulario del storage
         guardarFotoEnStorage();
         guardarFormularioEnStorage();
       }
@@ -717,7 +797,6 @@
           fotoNombre: fotoActualNombre,
           fotoMime: fotoActualMime
         });
-
         guardarHallazgosEnStorage();
         renderizarHallazgos();
         limpiarFormulario();
@@ -752,6 +831,34 @@
         areaSelect.value = '';
         sSelect.value = '';
         fechaInput.value = obtenerFechaActualLocal();
+      });
+
+      // ---------- BOTÓN LIMPIAR TODO ----------
+      clearAllBtn.addEventListener('click', function() {
+        const confirmar = confirm('¿Está seguro de que desea limpiar TODOS los datos?\n\nSe borrarán los hallazgos registrados, el formulario en curso y la foto temporal. Esta acción no se puede deshacer.');
+        if (!confirmar) return;
+        
+        limpiarStorage();
+        hallazgos = [];
+        fotoActualBase64 = null;
+        fotoActualNombre = '';
+        fotoActualMime = '';
+        
+        // Limpiar UI
+        renderizarHallazgos();
+        previewImg.src = '';
+        photoNameSpan.textContent = 'foto.jpg';
+        photoPreview.classList.add('hidden');
+        photoInput.value = '';
+        ubicacionInput.value = '';
+        ubicacionCount.textContent = '0';
+        descripcionInput.value = '';
+        auditorSelect.value = '';
+        areaSelect.value = '';
+        sSelect.value = '';
+        fechaInput.value = obtenerFechaActualLocal();
+        
+        alert('Datos limpiados correctamente. Puede comenzar una nueva auditoría.');
       });
 
       // ---------- GENERACIÓN DE EXCEL ----------
