@@ -75,6 +75,13 @@
       flex-wrap: wrap;
       justify-content: flex-end;
     }
+    /* Contenedor para apilar botones de panel en columna */
+    .panel-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: stretch;
+    }
     .btn-clear {
       background: #f8fbff;
       color: #d32f2f;
@@ -103,6 +110,47 @@
       white-space: nowrap;
       box-shadow: 0 4px 10px rgba(10, 61, 138, 0.2);
     }
+    /* Botón verde Corrección de Puntos */
+    .btn-correccion {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: 40px;
+      font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+      white-space: nowrap;
+    }
+    .btn-correccion:hover { background: #1b5e20; transform: translateY(-1px); }
+    .btn-correccion.activo { background: #1b5e20; box-shadow: inset 0 2px 6px rgba(0,0,0,0.3); }
+    .btn-correccion svg { width: 16px; height: 16px; fill: white; }
+    /* Botón azul Panel No Conformidades */
+    .btn-panel-nc {
+      background: #0a3d8a;
+      color: white;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: 40px;
+      font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(10, 61, 138, 0.3);
+      white-space: nowrap;
+    }
+    .btn-panel-nc:hover { background: #082f6b; transform: translateY(-1px); }
+    .btn-panel-nc.activo { background: #082f6b; box-shadow: inset 0 2px 6px rgba(0,0,0,0.3); }
+    .btn-panel-nc svg { width: 16px; height: 16px; fill: white; }
+
     @media (max-width: 850px) {
       .app-header {
         grid-template-columns: 1fr 1fr;
@@ -130,6 +178,12 @@
       flex-direction: column;
       gap: clamp(0.9rem, 2.5vw, 1.25rem);
       min-width: 0;
+      transition: opacity 0.3s;
+    }
+    .form-panel.bloqueado {
+      opacity: 0.45;
+      pointer-events: none;
+      user-select: none;
     }
     .field-group {
       display: flex;
@@ -228,7 +282,19 @@
     .btn-primary:disabled { background: #a0b8d9; cursor: not-allowed; box-shadow: none; }
     .btn-secondary { background: white; color: #0a3d8a; border: 2px solid #0a3d8a; }
     .btn-secondary:hover { background: #e6f0ff; }
+    .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
     .button-stack { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem; }
+
+    .btn-green {
+      background: #2e7d32; color: white; border: none;
+      box-shadow: 0 6px 14px rgba(46, 125, 50, 0.3);
+    }
+    .btn-green:hover:not(:disabled) { background: #1b5e20; transform: translateY(-1px); box-shadow: 0 10px 20px rgba(46, 125, 50, 0.4); }
+    .btn-green:disabled { background: #a5d6a7; cursor: not-allowed; box-shadow: none; }
+    .btn-outline-green { background: white; color: #2e7d32; border: 2px solid #2e7d32; }
+    .btn-outline-green:hover:not(:disabled) { background: #e8f5e9; }
+    .btn-outline-green:disabled { opacity: 0.5; cursor: not-allowed; }
+
     /* ---------- LISTA HALLAZGOS ---------- */
     .list-panel {
       background: #f5f9ff;
@@ -256,6 +322,7 @@
       border-radius: 40px; font-size: 0.8rem; font-weight: 600;
       transition: transform 0.2s; flex-shrink: 0;
     }
+    .badge-count.verde { background: #2e7d32; }
     .hallazgos-list {
       overflow-y: auto; flex: 1; display: flex; flex-direction: column;
       gap: 0.75rem; padding-right: 0.3rem; min-height: 0;
@@ -267,16 +334,19 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
       display: flex; gap: 0.75rem; align-items: flex-start; min-width: 0;
     }
+    .hallazgo-item.correccion { border-left-color: #2e7d32; }
     .hallazgo-icon {
       flex-shrink: 0; width: 32px; height: 32px; background: #e6f0ff;
       border-radius: 10px; display: flex; align-items: center; justify-content: center;
       color: #0a3d8a; font-weight: 700; font-size: 0.8rem;
     }
+    .hallazgo-icon.verde { background: #e8f5e9; color: #2e7d32; }
     .hallazgo-content { flex: 1; font-size: 0.85rem; min-width: 0; word-break: break-word; }
     .hallazgo-content strong {
       color: #0a3d8a; display: block; font-size: 0.8rem;
       margin-bottom: 0.15rem; overflow: hidden; text-overflow: ellipsis;
     }
+    .hallazgo-item.correccion .hallazgo-content strong { color: #2e7d32; }
     .hallazgo-content .fecha-line {
       display: block; font-size: 0.7rem; color: #6b7f9e;
       margin-bottom: 0.2rem; font-weight: 500;
@@ -319,6 +389,7 @@
       .hallazgo-img { width: 32px; height: 32px; }
       .hallazgo-icon { width: 28px; height: 28px; font-size: 0.75rem; }
       .photo-preview span { max-width: 100px; font-size: 0.75rem; }
+      .btn-correccion, .btn-panel-nc { padding: 0.35rem 0.7rem; font-size: 0.7rem; }
     }
     @media (max-width: 360px) {
       .header-badge span { display: none; }
@@ -344,6 +415,16 @@
       </div>
       <h1 class="header-title">Auditoría 5S Planta ETEC</h1>
       <div class="header-actions">
+        <div class="panel-buttons">
+          <button class="btn-correccion" id="btnCorreccion" title="Abrir formulario de Corrección de Puntos">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Corrección de Puntos
+          </button>
+          <button class="btn-panel-nc" id="btnPanelNoConformidades" title="Volver al formulario de registro de No Conformidades">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            Panel No Conformidades
+          </button>
+        </div>
         <button class="btn-clear" id="clearAllBtn" title="Limpiar todos los datos guardados y empezar de cero">
           <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
           Limpiar Todo
@@ -357,8 +438,90 @@
       </div>
     </header>
 
-    <div class="app-main">
-      <section class="form-panel">
+    <!-- Panel de Corrección de Puntos (oculto por defecto) -->
+    <div class="app-main hidden" id="panelCorreccion">
+      <section class="form-panel" id="formCorreccionPanel">
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Consecutivo a Corregir
+          </label>
+          <input type="number" id="consecutivoInput" min="1" placeholder="Ej: 1" />
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Fecha
+          </label>
+          <input type="date" id="fechaCorreccionInput" />
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Responsable
+          </label>
+          <input type="text" id="responsableInput" maxlength="60" placeholder="Nombres y apellidos" />
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            Observaciones (opcional)
+          </label>
+          <textarea id="observacionesInput" rows="3" placeholder="Observaciones adicionales..."></textarea>
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+            Foto Evidencia
+          </label>
+          <div class="photo-btn-container">
+            <button type="button" class="btn-photo" id="photoBtnCorreccion">
+              <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+              Tomar / Subir Foto
+            </button>
+            <input type="file" id="photoInputCorreccion" accept="image/*" capture="environment" class="hidden" />
+            <div class="photo-preview hidden" id="photoPreviewCorreccion">
+              <img id="previewImgCorreccion" src="" alt="Evidencia" />
+              <span id="photoNameCorreccion">foto.jpg</span>
+            </div>
+          </div>
+        </div>
+        <div class="button-stack">
+          <button class="btn-primary btn-green" id="addCorreccionBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Registrar Corrección
+          </button>
+          <button class="btn-secondary btn-outline-green" id="finishCorreccionBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#2e7d32"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Terminar Corrección de Puntos
+          </button>
+          <button class="btn-secondary" id="clearCorreccionBtn" style="color:#d32f2f; border-color:#ffcdd2; background:#f8fbff;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#d32f2f"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            Limpiar Campos
+          </button>
+        </div>
+      </section>
+
+      <aside class="list-panel">
+        <div class="list-header">
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#2e7d32"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            Correcciones registradas
+          </h2>
+          <span class="badge-count verde" id="countBadgeCorreccion">0</span>
+        </div>
+        <div class="hallazgos-list" id="correccionesList">
+          <div class="empty-state" id="emptyStateCorreccion">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <span>Aún no hay correcciones registradas.</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Panel de Auditoría 5S (visible por defecto) -->
+    <div class="app-main" id="panelAuditoria">
+      <section class="form-panel" id="formAuditoriaPanel">
         <div class="field-group">
           <label>
             <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
@@ -487,18 +650,35 @@
     </div>
   </div>
 
+  <div class="thankyou-overlay" id="thankyouOverlayCorreccion">
+    <div class="thankyou-card">
+      <svg viewBox="0 0 24 24" style="fill:#2e7d32;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      <h2 style="color:#2e7d32;">¡Corrección de Puntos finalizada!</h2>
+      <p>El archivo Excel con las correcciones se descargará automáticamente. ¡Gracias!</p>
+      <button class="btn-primary btn-green" id="closeThankyouCorreccion" style="min-width:140px;">Cerrar</button>
+    </div>
+  </div>
+
   <script>
     (function() {
       // ---------- CONSTANTES DE LOCALSTORAGE ----------
       const LS_KEY_HALLAZGOS = 'auditoria5s_hallazgos';
       const LS_KEY_FORM = 'auditoria5s_form_temp';
       const LS_KEY_FOTO = 'auditoria5s_foto_temp';
+      const LS_KEY_CORRECCIONES = 'auditoria5s_correcciones';
+      const LS_KEY_CORREC_FORM = 'auditoria5s_correc_form_temp';
+      const LS_KEY_CORREC_FOTO = 'auditoria5s_correc_foto_temp';
 
       let hallazgos = [];
+      let correcciones = [];
       let fotoActualBase64 = null;
       let fotoActualNombre = '';
       let fotoActualMime = '';
+      let fotoCorreccionBase64 = null;
+      let fotoCorreccionNombre = '';
+      let fotoCorreccionMime = '';
 
+      // Referencias DOM - Auditoría
       const fechaInput = document.getElementById('fechaInput');
       const auditorSelect = document.getElementById('auditorSelect');
       const areaSelect = document.getElementById('areaSelect');
@@ -521,6 +701,31 @@
       const clearAllBtn = document.getElementById('clearAllBtn');
       const resizeCanvas = document.getElementById('resizeCanvas');
 
+      // Referencias DOM - Corrección
+      const btnCorreccion = document.getElementById('btnCorreccion');
+      const btnPanelNoConformidades = document.getElementById('btnPanelNoConformidades');
+      const panelCorreccion = document.getElementById('panelCorreccion');
+      const panelAuditoria = document.getElementById('panelAuditoria');
+      const formAuditoriaPanel = document.getElementById('formAuditoriaPanel');
+      const formCorreccionPanel = document.getElementById('formCorreccionPanel');
+      const consecutivoInput = document.getElementById('consecutivoInput');
+      const fechaCorreccionInput = document.getElementById('fechaCorreccionInput');
+      const responsableInput = document.getElementById('responsableInput');
+      const observacionesInput = document.getElementById('observacionesInput');
+      const photoBtnCorreccion = document.getElementById('photoBtnCorreccion');
+      const photoInputCorreccion = document.getElementById('photoInputCorreccion');
+      const photoPreviewCorreccion = document.getElementById('photoPreviewCorreccion');
+      const previewImgCorreccion = document.getElementById('previewImgCorreccion');
+      const photoNameCorreccion = document.getElementById('photoNameCorreccion');
+      const addCorreccionBtn = document.getElementById('addCorreccionBtn');
+      const finishCorreccionBtn = document.getElementById('finishCorreccionBtn');
+      const clearCorreccionBtn = document.getElementById('clearCorreccionBtn');
+      const correccionesList = document.getElementById('correccionesList');
+      const emptyStateCorreccion = document.getElementById('emptyStateCorreccion');
+      const countBadgeCorreccion = document.getElementById('countBadgeCorreccion');
+      const thankyouOverlayCorreccion = document.getElementById('thankyouOverlayCorreccion');
+      const closeThankyouCorreccion = document.getElementById('closeThankyouCorreccion');
+
       // ---------- UTILIDADES ----------
       function obtenerFechaActualLocal() {
         const d = new Date();
@@ -537,7 +742,6 @@
       }
 
       // ---------- REDIMENSIONAR IMAGEN AL MÍNIMO ----------
-      // 600x600 px, calidad 0.5. Una foto de 5MB pesará ~20-40 KB.
       function redimensionarImagen(file, maxWidth, maxHeight, callback) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -563,7 +767,6 @@
             const ctx = resizeCanvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Calidad 0.5 para reducir drásticamente el peso
             const nuevoBase64 = resizeCanvas.toDataURL('image/jpeg', 0.5);
             callback(nuevoBase64);
           };
@@ -582,37 +785,23 @@
 
       // ---------- LOCALSTORAGE ----------
       function guardarHallazgosEnStorage() {
-        try {
-          localStorage.setItem(LS_KEY_HALLAZGOS, JSON.stringify(hallazgos));
-        } catch (e) {
-          console.warn('No se pudo guardar hallazgos:', e);
-        }
+        try { localStorage.setItem(LS_KEY_HALLAZGOS, JSON.stringify(hallazgos)); } catch (e) {}
       }
-
       function cargarHallazgosDesdeStorage() {
         try {
           const data = localStorage.getItem(LS_KEY_HALLAZGOS);
           if (data) hallazgos = JSON.parse(data);
-        } catch (e) {
-          console.warn('No se pudo cargar hallazgos:', e);
-          hallazgos = [];
-        }
+        } catch (e) { hallazgos = []; }
       }
-
       function guardarFormularioEnStorage() {
         try {
           const formData = {
-            fecha: fechaInput.value,
-            auditor: auditorSelect.value,
-            area: areaSelect.value,
-            s: sSelect.value,
-            ubicacion: ubicacionInput.value,
-            descripcion: descripcionInput.value
+            fecha: fechaInput.value, auditor: auditorSelect.value, area: areaSelect.value,
+            s: sSelect.value, ubicacion: ubicacionInput.value, descripcion: descripcionInput.value
           };
           localStorage.setItem(LS_KEY_FORM, JSON.stringify(formData));
-        } catch (e) { /* ignorar */ }
+        } catch (e) {}
       }
-
       function cargarFormularioDesdeStorage() {
         try {
           const data = localStorage.getItem(LS_KEY_FORM);
@@ -622,34 +811,18 @@
             if (f.auditor) auditorSelect.value = f.auditor;
             if (f.area) areaSelect.value = f.area;
             if (f.s) sSelect.value = f.s;
-            if (f.ubicacion) {
-              ubicacionInput.value = f.ubicacion;
-              ubicacionCount.textContent = f.ubicacion.length;
-            }
+            if (f.ubicacion) { ubicacionInput.value = f.ubicacion; ubicacionCount.textContent = f.ubicacion.length; }
             if (f.descripcion) descripcionInput.value = f.descripcion;
           }
-        } catch (e) {
-          console.warn('No se pudo cargar el formulario:', e);
-        }
+        } catch (e) {}
       }
-
       function guardarFotoEnStorage() {
         try {
           if (fotoActualBase64) {
-            const fotoData = {
-              base64: fotoActualBase64,
-              nombre: fotoActualNombre,
-              mime: fotoActualMime
-            };
-            localStorage.setItem(LS_KEY_FOTO, JSON.stringify(fotoData));
-          } else {
-            localStorage.removeItem(LS_KEY_FOTO);
-          }
-        } catch (e) {
-          console.warn('No se pudo guardar la foto temporal:', e);
-        }
+            localStorage.setItem(LS_KEY_FOTO, JSON.stringify({ base64: fotoActualBase64, nombre: fotoActualNombre, mime: fotoActualMime }));
+          } else { localStorage.removeItem(LS_KEY_FOTO); }
+        } catch (e) {}
       }
-
       function cargarFotoDesdeStorage() {
         try {
           const data = localStorage.getItem(LS_KEY_FOTO);
@@ -664,17 +837,71 @@
               photoPreview.classList.remove('hidden');
             }
           }
-        } catch (e) {
-          console.warn('No se pudo cargar la foto temporal:', e);
-        }
+        } catch (e) {}
       }
-
+      // Correcciones storage
+      function guardarCorreccionesEnStorage() {
+        try { localStorage.setItem(LS_KEY_CORRECCIONES, JSON.stringify(correcciones)); } catch (e) {}
+      }
+      function cargarCorreccionesDesdeStorage() {
+        try {
+          const data = localStorage.getItem(LS_KEY_CORRECCIONES);
+          if (data) correcciones = JSON.parse(data);
+        } catch (e) { correcciones = []; }
+      }
+      function guardarFormularioCorreccionEnStorage() {
+        try {
+          const formData = {
+            consecutivo: consecutivoInput.value, fecha: fechaCorreccionInput.value,
+            responsable: responsableInput.value, observaciones: observacionesInput.value
+          };
+          localStorage.setItem(LS_KEY_CORREC_FORM, JSON.stringify(formData));
+        } catch (e) {}
+      }
+      function cargarFormularioCorreccionDesdeStorage() {
+        try {
+          const data = localStorage.getItem(LS_KEY_CORREC_FORM);
+          if (data) {
+            const f = JSON.parse(data);
+            if (f.consecutivo) consecutivoInput.value = f.consecutivo;
+            if (f.fecha) fechaCorreccionInput.value = f.fecha;
+            if (f.responsable) responsableInput.value = f.responsable;
+            if (f.observaciones) observacionesInput.value = f.observaciones;
+          }
+        } catch (e) {}
+      }
+      function guardarFotoCorreccionEnStorage() {
+        try {
+          if (fotoCorreccionBase64) {
+            localStorage.setItem(LS_KEY_CORREC_FOTO, JSON.stringify({ base64: fotoCorreccionBase64, nombre: fotoCorreccionNombre, mime: fotoCorreccionMime }));
+          } else { localStorage.removeItem(LS_KEY_CORREC_FOTO); }
+        } catch (e) {}
+      }
+      function cargarFotoCorreccionDesdeStorage() {
+        try {
+          const data = localStorage.getItem(LS_KEY_CORREC_FOTO);
+          if (data) {
+            const f = JSON.parse(data);
+            if (f.base64) {
+              fotoCorreccionBase64 = f.base64;
+              fotoCorreccionNombre = f.nombre || 'foto.jpg';
+              fotoCorreccionMime = f.mime || 'image/jpeg';
+              previewImgCorreccion.src = fotoCorreccionBase64;
+              photoNameCorreccion.textContent = fotoCorreccionNombre;
+              photoPreviewCorreccion.classList.remove('hidden');
+            }
+          }
+        } catch (e) {}
+      }
       function limpiarStorage() {
         try {
           localStorage.removeItem(LS_KEY_HALLAZGOS);
           localStorage.removeItem(LS_KEY_FORM);
           localStorage.removeItem(LS_KEY_FOTO);
-        } catch (e) { /* ignorar */ }
+          localStorage.removeItem(LS_KEY_CORRECCIONES);
+          localStorage.removeItem(LS_KEY_CORREC_FORM);
+          localStorage.removeItem(LS_KEY_CORREC_FOTO);
+        } catch (e) {}
       }
 
       // ---------- INICIALIZACIÓN ----------
@@ -682,40 +909,49 @@
         cargarHallazgosDesdeStorage();
         cargarFormularioDesdeStorage();
         cargarFotoDesdeStorage();
+        cargarCorreccionesDesdeStorage();
+        cargarFormularioCorreccionDesdeStorage();
+        cargarFotoCorreccionDesdeStorage();
 
-        if (!fechaInput.value) {
-          fechaInput.value = obtenerFechaActualLocal();
-        }
+        if (!fechaInput.value) fechaInput.value = obtenerFechaActualLocal();
+        if (!fechaCorreccionInput.value) fechaCorreccionInput.value = obtenerFechaActualLocal();
 
         renderizarHallazgos();
+        renderizarCorrecciones();
+        // Asegurar que el panel de corrección esté oculto al inicio
+        panelCorreccion.classList.add('hidden');
+        panelAuditoria.classList.remove('hidden');
+        formCorreccionPanel.classList.remove('bloqueado');
+        formAuditoriaPanel.classList.remove('bloqueado');
+        // Estado inicial de botones: azul activo (estamos en No Conformidades)
+        btnPanelNoConformidades.classList.add('activo');
+        btnCorreccion.classList.remove('activo');
       }
 
-      // ---------- EVENTOS: GUARDADO AUTOMÁTICO DEL FORMULARIO ----------
+      // ---------- EVENTOS: GUARDADO AUTOMÁTICO FORMULARIO AUDITORÍA ----------
       [fechaInput, auditorSelect, areaSelect, sSelect, ubicacionInput, descripcionInput].forEach(el => {
         el.addEventListener('input', guardarFormularioEnStorage);
         el.addEventListener('change', guardarFormularioEnStorage);
       });
-
       ubicacionInput.addEventListener('input', function() {
         ubicacionCount.textContent = this.value.length;
       });
 
-      // ---------- FOTO: LECTURA Y REDIMENSIONADO ----------
+      // ---------- EVENTOS: GUARDADO AUTOMÁTICO FORMULARIO CORRECCIÓN ----------
+      [consecutivoInput, fechaCorreccionInput, responsableInput, observacionesInput].forEach(el => {
+        el.addEventListener('input', guardarFormularioCorreccionEnStorage);
+        el.addEventListener('change', guardarFormularioCorreccionEnStorage);
+      });
+
+      // ---------- FOTO AUDITORÍA ----------
       photoBtn.addEventListener('click', () => photoInput.click());
       photoInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
-        if (!file.type.startsWith('image/')) {
-          alert('Por favor seleccione un archivo de imagen válido.');
-          return;
-        }
-
-        // Feedback visual
+        if (!file.type.startsWith('image/')) { alert('Por favor seleccione un archivo de imagen válido.'); return; }
         photoNameSpan.textContent = 'Procesando...';
         photoPreview.classList.remove('hidden');
-        previewImg.src = ''; // Limpiar preview anterior
-
-        // Redimensionar a máximo 600x600 px con calidad 0.5
+        previewImg.src = '';
         redimensionarImagen(file, 600, 600, function(base64Reducido) {
           if (base64Reducido) {
             fotoActualBase64 = base64Reducido;
@@ -732,7 +968,32 @@
         });
       });
 
-      // ---------- VALIDACIÓN ----------
+      // ---------- FOTO CORRECCIÓN ----------
+      photoBtnCorreccion.addEventListener('click', () => photoInputCorreccion.click());
+      photoInputCorreccion.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) { alert('Por favor seleccione un archivo de imagen válido.'); return; }
+        photoNameCorreccion.textContent = 'Procesando...';
+        photoPreviewCorreccion.classList.remove('hidden');
+        previewImgCorreccion.src = '';
+        redimensionarImagen(file, 600, 600, function(base64Reducido) {
+          if (base64Reducido) {
+            fotoCorreccionBase64 = base64Reducido;
+            fotoCorreccionNombre = file.name;
+            fotoCorreccionMime = 'image/jpeg';
+            previewImgCorreccion.src = fotoCorreccionBase64;
+            photoNameCorreccion.textContent = file.name;
+            photoPreviewCorreccion.classList.remove('hidden');
+            guardarFotoCorreccionEnStorage();
+          } else {
+            photoPreviewCorreccion.classList.add('hidden');
+            photoInputCorreccion.value = '';
+          }
+        });
+      });
+
+      // ---------- VALIDACIÓN AUDITORÍA ----------
       function validarFormulario() {
         if (!fechaInput.value) { alert('Debe indicar la fecha de la auditoría.'); return false; }
         if (!auditorSelect.value) { alert('Debe seleccionar un auditor.'); return false; }
@@ -744,20 +1005,31 @@
         if (!fotoActualBase64) { alert('Debe adjuntar una foto como evidencia.'); return false; }
         return true;
       }
+      function validarFormularioCorreccion() {
+        if (!consecutivoInput.value || parseInt(consecutivoInput.value) < 1) { alert('Debe ingresar un número de consecutivo válido.'); return false; }
+        if (!fechaCorreccionInput.value) { alert('Debe indicar la fecha.'); return false; }
+        if (!responsableInput.value.trim()) { alert('Debe ingresar el nombre del responsable.'); return false; }
+        if (!fotoCorreccionBase64) { alert('Debe adjuntar una foto como evidencia.'); return false; }
+        return true;
+      }
 
       function limpiarFormulario() {
-        ubicacionInput.value = '';
-        ubicacionCount.textContent = '0';
+        ubicacionInput.value = ''; ubicacionCount.textContent = '0';
         descripcionInput.value = '';
-        fotoActualBase64 = null;
-        fotoActualNombre = '';
-        fotoActualMime = '';
-        photoPreview.classList.add('hidden');
-        previewImg.src = '';
-        photoInput.value = '';
+        fotoActualBase64 = null; fotoActualNombre = ''; fotoActualMime = '';
+        photoPreview.classList.add('hidden'); previewImg.src = ''; photoInput.value = '';
         ubicacionInput.focus();
-        guardarFotoEnStorage();
-        guardarFormularioEnStorage();
+        guardarFotoEnStorage(); guardarFormularioEnStorage();
+      }
+      function limpiarFormularioCorreccion() {
+        consecutivoInput.value = '';
+        fechaCorreccionInput.value = obtenerFechaActualLocal();
+        responsableInput.value = '';
+        observacionesInput.value = '';
+        fotoCorreccionBase64 = null; fotoCorreccionNombre = ''; fotoCorreccionMime = '';
+        photoPreviewCorreccion.classList.add('hidden'); previewImgCorreccion.src = ''; photoInputCorreccion.value = '';
+        consecutivoInput.focus();
+        guardarFotoCorreccionEnStorage(); guardarFormularioCorreccionEnStorage();
       }
 
       // ---------- RENDERIZADO ----------
@@ -786,20 +1058,39 @@
         }
         countBadge.textContent = hallazgos.length;
       }
+      function renderizarCorrecciones() {
+        correccionesList.innerHTML = '';
+        if (correcciones.length === 0) {
+          correccionesList.appendChild(emptyStateCorreccion);
+          emptyStateCorreccion.classList.remove('hidden');
+        } else {
+          emptyStateCorreccion.classList.add('hidden');
+          correcciones.forEach((c, idx) => {
+            const item = document.createElement('div');
+            item.className = 'hallazgo-item correccion';
+            item.innerHTML = `
+              <div class="hallazgo-icon verde">${idx + 1}</div>
+              <div class="hallazgo-content">
+                <span class="fecha-line">📅 ${formatearFechaVisible(c.fecha)}</span>
+                <strong>Cons. #${c.consecutivo} · ${c.responsable}</strong>
+                <p>${c.observaciones || 'Sin observaciones'}</p>
+              </div>
+              ${c.fotoBase64 ? `<img class="hallazgo-img" src="${c.fotoBase64}" alt="Evidencia" />` : ''}
+            `;
+            correccionesList.appendChild(item);
+          });
+        }
+        countBadgeCorreccion.textContent = correcciones.length;
+      }
 
       // ---------- AGREGAR HALLAZGO ----------
       addBtn.addEventListener('click', function() {
         if (!validarFormulario()) return;
         hallazgos.push({
-          fecha: fechaInput.value,
-          auditor: auditorSelect.value,
-          area: areaSelect.value,
-          s: sSelect.value,
-          ubicacion: ubicacionInput.value.trim(),
+          fecha: fechaInput.value, auditor: auditorSelect.value, area: areaSelect.value,
+          s: sSelect.value, ubicacion: ubicacionInput.value.trim(),
           descripcion: descripcionInput.value.trim(),
-          fotoBase64: fotoActualBase64,
-          fotoNombre: fotoActualNombre,
-          fotoMime: fotoActualMime
+          fotoBase64: fotoActualBase64, fotoNombre: fotoActualNombre, fotoMime: fotoActualMime
         });
         guardarHallazgosEnStorage();
         renderizarHallazgos();
@@ -808,12 +1099,26 @@
         setTimeout(() => countBadge.style.transform = 'scale(1)', 200);
       });
 
+      // ---------- AGREGAR CORRECCIÓN ----------
+      addCorreccionBtn.addEventListener('click', function() {
+        if (!validarFormularioCorreccion()) return;
+        correcciones.push({
+          consecutivo: parseInt(consecutivoInput.value),
+          fecha: fechaCorreccionInput.value,
+          responsable: responsableInput.value.trim(),
+          observaciones: observacionesInput.value.trim(),
+          fotoBase64: fotoCorreccionBase64, fotoNombre: fotoCorreccionNombre, fotoMime: fotoCorreccionMime
+        });
+        guardarCorreccionesEnStorage();
+        renderizarCorrecciones();
+        limpiarFormularioCorreccion();
+        countBadgeCorreccion.style.transform = 'scale(1.3)';
+        setTimeout(() => countBadgeCorreccion.style.transform = 'scale(1)', 200);
+      });
+
       // ---------- FINALIZAR AUDITORÍA ----------
       finishBtn.addEventListener('click', async function() {
-        if (hallazgos.length === 0) {
-          alert('No ha registrado ninguna no conformidad. Agregue al menos una antes de terminar.');
-          return;
-        }
+        if (hallazgos.length === 0) { alert('No ha registrado ninguna no conformidad. Agregue al menos una antes de terminar.'); return; }
         if (!confirm(`¿Está seguro de terminar la auditoría? Se han registrado ${hallazgos.length} no conformidad(es).`)) return;
         try {
           await generarExcelConImagenes();
@@ -824,47 +1129,95 @@
         }
       });
 
-      // ---------- CERRAR OVERLAY ----------
+      // ---------- FINALIZAR CORRECCIÓN ----------
+      finishCorreccionBtn.addEventListener('click', async function() {
+        if (correcciones.length === 0) { alert('No ha registrado ninguna corrección. Agregue al menos una antes de terminar.'); return; }
+        if (!confirm(`¿Está seguro de terminar la corrección de puntos? Se han registrado ${correcciones.length} corrección(es).`)) return;
+        try {
+          await generarExcelCorrecciones();
+          thankyouOverlayCorreccion.style.display = 'flex';
+        } catch (error) {
+          console.error(error);
+          alert('Ocurrió un error al generar el archivo Excel. Por favor intente de nuevo.');
+        }
+      });
+
+      // ---------- CERRAR OVERLAYS ----------
       closeThankyou.addEventListener('click', function() {
         thankyouOverlay.style.display = 'none';
         hallazgos = [];
         limpiarStorage();
         renderizarHallazgos();
         limpiarFormulario();
-        auditorSelect.value = '';
-        areaSelect.value = '';
-        sSelect.value = '';
+        auditorSelect.value = ''; areaSelect.value = ''; sSelect.value = '';
         fechaInput.value = obtenerFechaActualLocal();
+      });
+      closeThankyouCorreccion.addEventListener('click', function() {
+        thankyouOverlayCorreccion.style.display = 'none';
+        correcciones = [];
+        try {
+          localStorage.removeItem(LS_KEY_CORRECCIONES);
+          localStorage.removeItem(LS_KEY_CORREC_FORM);
+          localStorage.removeItem(LS_KEY_CORREC_FOTO);
+        } catch (e) {}
+        renderizarCorrecciones();
+        limpiarFormularioCorreccion();
       });
 
       // ---------- BOTÓN LIMPIAR TODO ----------
       clearAllBtn.addEventListener('click', function() {
-        const confirmar = confirm('¿Está seguro de que desea limpiar TODOS los datos?\n\nSe borrarán los hallazgos registrados, el formulario en curso y la foto temporal. Esta acción no se puede deshacer.');
+        const confirmar = confirm('¿Está seguro de que desea limpiar TODOS los datos?\n\nSe borrarán los hallazgos registrados, las correcciones, el formulario en curso y la foto temporal. Esta acción no se puede deshacer.');
         if (!confirmar) return;
-        
         limpiarStorage();
-        hallazgos = [];
-        fotoActualBase64 = null;
-        fotoActualNombre = '';
-        fotoActualMime = '';
-        
-        renderizarHallazgos();
-        previewImg.src = '';
-        photoNameSpan.textContent = 'foto.jpg';
-        photoPreview.classList.add('hidden');
-        photoInput.value = '';
-        ubicacionInput.value = '';
-        ubicacionCount.textContent = '0';
-        descripcionInput.value = '';
-        auditorSelect.value = '';
-        areaSelect.value = '';
-        sSelect.value = '';
+        hallazgos = []; correcciones = [];
+        fotoActualBase64 = null; fotoActualNombre = ''; fotoActualMime = '';
+        fotoCorreccionBase64 = null; fotoCorreccionNombre = ''; fotoCorreccionMime = '';
+        renderizarHallazgos(); renderizarCorrecciones();
+        previewImg.src = ''; photoNameSpan.textContent = 'foto.jpg'; photoPreview.classList.add('hidden'); photoInput.value = '';
+        previewImgCorreccion.src = ''; photoNameCorreccion.textContent = 'foto.jpg'; photoPreviewCorreccion.classList.add('hidden'); photoInputCorreccion.value = '';
+        ubicacionInput.value = ''; ubicacionCount.textContent = '0'; descripcionInput.value = '';
+        auditorSelect.value = ''; areaSelect.value = ''; sSelect.value = '';
+        consecutivoInput.value = ''; responsableInput.value = ''; observacionesInput.value = '';
         fechaInput.value = obtenerFechaActualLocal();
-        
-        alert('Datos limpiados correctamente. Puede comenzar una nueva auditoría.');
+        fechaCorreccionInput.value = obtenerFechaActualLocal();
+        alert('Datos limpiados correctamente. Puede comenzar una nueva auditoría o corrección.');
       });
 
-      // ---------- GENERACIÓN DE EXCEL ----------
+      // ---------- BOTÓN LIMPIAR CAMPOS CORRECCIÓN ----------
+      clearCorreccionBtn.addEventListener('click', function() {
+        const confirmar = confirm('¿Limpiar los campos del formulario de corrección? Los registros ya guardados se mantienen.');
+        if (!confirmar) return;
+        limpiarFormularioCorreccion();
+        alert('Campos limpiados.');
+      });
+
+      // ---------- TOGGLE PANEL CORRECCIÓN / AUDITORÍA ----------
+      btnCorreccion.addEventListener('click', function() {
+        // Si ya está en corrección, no hace nada (evita parpadeos)
+        if (!panelCorreccion.classList.contains('hidden')) return;
+        // Abrir corrección y bloquear auditoría
+        panelCorreccion.classList.remove('hidden');
+        panelAuditoria.classList.add('hidden');
+        btnCorreccion.classList.add('activo');
+        btnPanelNoConformidades.classList.remove('activo');
+        formAuditoriaPanel.classList.add('bloqueado');
+        formCorreccionPanel.classList.remove('bloqueado');
+        consecutivoInput.focus();
+      });
+
+      btnPanelNoConformidades.addEventListener('click', function() {
+        // Si ya está en no conformidades, no hace nada
+        if (!panelAuditoria.classList.contains('hidden')) return;
+        // Volver a auditoría
+        panelCorreccion.classList.add('hidden');
+        panelAuditoria.classList.remove('hidden');
+        btnCorreccion.classList.remove('activo');
+        btnPanelNoConformidades.classList.add('activo');
+        formAuditoriaPanel.classList.remove('bloqueado');
+        formCorreccionPanel.classList.add('bloqueado');
+      });
+
+      // ---------- GENERACIÓN DE EXCEL AUDITORÍA ----------
       async function generarExcelConImagenes() {
         if (typeof ExcelJS === 'undefined') {
           await new Promise((resolve, reject) => {
@@ -875,10 +1228,8 @@
             document.head.appendChild(script);
           });
         }
-
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Hallazgos');
-
         worksheet.columns = [
           { header: 'N°', key: 'num', width: 6 },
           { header: 'Fecha Auditoría', key: 'fecha', width: 16 },
@@ -889,22 +1240,14 @@
           { header: 'Descripción', key: 'descripcion', width: 45 },
           { header: 'Foto Evidencia', key: 'foto', width: 25 }
         ];
-
         worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
         worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0A3D8A' } };
         worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
-
         for (let i = 0; i < hallazgos.length; i++) {
           const h = hallazgos[i];
           const row = worksheet.addRow({
-            num: i + 1,
-            fecha: formatearFechaVisible(h.fecha),
-            auditor: h.auditor,
-            area: h.area,
-            s: h.s,
-            ubicacion: h.ubicacion,
-            descripcion: h.descripcion,
-            foto: ''
+            num: i + 1, fecha: formatearFechaVisible(h.fecha), auditor: h.auditor,
+            area: h.area, s: h.s, ubicacion: h.ubicacion, descripcion: h.descripcion, foto: ''
           });
           if (h.fotoBase64) {
             try {
@@ -913,33 +1256,20 @@
               let extension = 'png';
               if (mime.includes('jpeg') || mime.includes('jpg')) extension = 'jpeg';
               const imageId = workbook.addImage({ base64: base64Data, extension: extension });
-              worksheet.addImage(imageId, {
-                tl: { col: 7, row: i + 1 },
-                ext: { width: 80, height: 60 },
-                editAs: 'oneCell'
-              });
+              worksheet.addImage(imageId, { tl: { col: 7, row: i + 1 }, ext: { width: 80, height: 60 }, editAs: 'oneCell' });
               worksheet.getRow(i + 2).height = 65;
             } catch (imgError) {
-              console.warn('Error al insertar imagen:', imgError);
               row.getCell('foto').value = 'Error al cargar imagen';
             }
-          } else {
-            row.getCell('foto').value = 'Sin imagen';
-          }
+          } else { row.getCell('foto').value = 'Sin imagen'; }
         }
-
         worksheet.eachRow((row) => {
           row.eachCell((cell) => {
-            cell.border = {
-              top: { style: 'thin', color: { argb: 'FFCCE0FF' } },
-              left: { style: 'thin', color: { argb: 'FFCCE0FF' } },
-              bottom: { style: 'thin', color: { argb: 'FFCCE0FF' } },
-              right: { style: 'thin', color: { argb: 'FFCCE0FF' } }
-            };
+            cell.border = { top: { style: 'thin', color: { argb: 'FFCCE0FF' } }, left: { style: 'thin', color: { argb: 'FFCCE0FF' } },
+              bottom: { style: 'thin', color: { argb: 'FFCCE0FF' } }, right: { style: 'thin', color: { argb: 'FFCCE0FF' } } };
             cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
           });
         });
-
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = window.URL.createObjectURL(blob);
@@ -952,9 +1282,73 @@
         window.URL.revokeObjectURL(url);
       }
 
+      // ---------- GENERACIÓN DE EXCEL CORRECCIONES ----------
+      async function generarExcelCorrecciones() {
+        if (typeof ExcelJS === 'undefined') {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Correcciones');
+        worksheet.columns = [
+          { header: 'N°', key: 'num', width: 6 },
+          { header: 'Consecutivo', key: 'consecutivo', width: 14 },
+          { header: 'Fecha', key: 'fecha', width: 16 },
+          { header: 'Responsable', key: 'responsable', width: 28 },
+          { header: 'Observaciones', key: 'observaciones', width: 45 },
+          { header: 'Foto Evidencia', key: 'foto', width: 25 }
+        ];
+        worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2E7D32' } };
+        worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+        for (let i = 0; i < correcciones.length; i++) {
+          const c = correcciones[i];
+          const row = worksheet.addRow({
+            num: i + 1, consecutivo: c.consecutivo, fecha: formatearFechaVisible(c.fecha),
+            responsable: c.responsable, observaciones: c.observaciones || '', foto: ''
+          });
+          if (c.fotoBase64) {
+            try {
+              const base64Data = c.fotoBase64.split(',')[1];
+              const mime = c.fotoBase64.split(';')[0].split(':')[1];
+              let extension = 'png';
+              if (mime.includes('jpeg') || mime.includes('jpg')) extension = 'jpeg';
+              const imageId = workbook.addImage({ base64: base64Data, extension: extension });
+              worksheet.addImage(imageId, { tl: { col: 5, row: i + 1 }, ext: { width: 80, height: 60 }, editAs: 'oneCell' });
+              worksheet.getRow(i + 2).height = 65;
+            } catch (imgError) {
+              row.getCell('foto').value = 'Error al cargar imagen';
+            }
+          } else { row.getCell('foto').value = 'Sin imagen'; }
+        }
+        worksheet.eachRow((row) => {
+          row.eachCell((cell) => {
+            cell.border = { top: { style: 'thin', color: { argb: 'FFCCE0FF' } }, left: { style: 'thin', color: { argb: 'FFCCE0FF' } },
+              bottom: { style: 'thin', color: { argb: 'FFCCE0FF' } }, right: { style: 'thin', color: { argb: 'FFCCE0FF' } } };
+            cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+          });
+        });
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Correccion_Puntos_ETEC_${fechaCorreccionInput.value || new Date().toISOString().slice(0,10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+
       // ---------- ARRANCAR ----------
       inicializar();
     })();
   </script>
 </body>
 </html>
+```
