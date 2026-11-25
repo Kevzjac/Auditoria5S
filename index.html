@@ -486,6 +486,28 @@
             </div>
           </div>
         </div>
+
+        <!-- ===== NUEVO: Pregunta de coherencia con 5S ===== -->
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+            ¿El punto auditado sí es coherente con los principios de las 5S del Área evaluada?
+          </label>
+          <select id="coherenciaSelect">
+            <option value="">Seleccione SI / NO</option>
+            <option value="SI">SI</option>
+            <option value="NO">NO</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            Justifica tu respuesta (opcional)
+          </label>
+          <textarea id="justificacionInput" rows="3" placeholder="Justificación de la respuesta..."></textarea>
+        </div>
+        <!-- ===== FIN NUEVO ===== -->
+
         <div class="button-stack">
           <button class="btn-primary btn-green" id="addCorreccionBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -729,6 +751,11 @@
       const thankyouOverlayCorreccion = document.getElementById('thankyouOverlayCorreccion');
       const closeThankyouCorreccion = document.getElementById('closeThankyouCorreccion');
 
+      // ===== NUEVO: Referencias DOM para coherencia y justificación =====
+      const coherenciaSelect = document.getElementById('coherenciaSelect');
+      const justificacionInput = document.getElementById('justificacionInput');
+      // ===== FIN NUEVO =====
+
       // ---------- UTILIDADES ----------
       function obtenerFechaActualLocal() {
         const d = new Date();
@@ -854,10 +881,13 @@
       }
       function guardarFormularioCorreccionEnStorage() {
         try {
+          // ===== NUEVO: incluir coherencia y justificación =====
           const formData = {
             consecutivo: consecutivoInput.value, fecha: fechaCorreccionInput.value,
-            responsable: responsableInput.value, observaciones: observacionesInput.value
+            responsable: responsableInput.value, observaciones: observacionesInput.value,
+            coherencia: coherenciaSelect.value, justificacion: justificacionInput.value
           };
+          // ===== FIN NUEVO =====
           localStorage.setItem(LS_KEY_CORREC_FORM, JSON.stringify(formData));
         } catch (e) {}
       }
@@ -870,6 +900,10 @@
             if (f.fecha) fechaCorreccionInput.value = f.fecha;
             if (f.responsable) responsableInput.value = f.responsable;
             if (f.observaciones) observacionesInput.value = f.observaciones;
+            // ===== NUEVO: cargar coherencia y justificación =====
+            if (f.coherencia) coherenciaSelect.value = f.coherencia;
+            if (f.justificacion) justificacionInput.value = f.justificacion;
+            // ===== FIN NUEVO =====
           }
         } catch (e) {}
       }
@@ -941,10 +975,12 @@
       });
 
       // ---------- EVENTOS: GUARDADO AUTOMÁTICO FORMULARIO CORRECCIÓN ----------
-      [consecutivoInput, fechaCorreccionInput, responsableInput, observacionesInput].forEach(el => {
+      // ===== NUEVO: incluir coherenciaSelect y justificacionInput =====
+      [consecutivoInput, fechaCorreccionInput, responsableInput, observacionesInput, coherenciaSelect, justificacionInput].forEach(el => {
         el.addEventListener('input', guardarFormularioCorreccionEnStorage);
         el.addEventListener('change', guardarFormularioCorreccionEnStorage);
       });
+      // ===== FIN NUEVO =====
 
       // ---------- FOTO AUDITORÍA ----------
       photoBtn.addEventListener('click', () => photoInput.click());
@@ -1013,6 +1049,9 @@
         if (!fechaCorreccionInput.value) { alert('Debe indicar la fecha.'); return false; }
         if (!responsableInput.value.trim()) { alert('Debe ingresar el nombre del responsable.'); return false; }
         if (!fotoCorreccionBase64) { alert('Debe adjuntar una foto como evidencia.'); return false; }
+        // ===== NUEVO: validar coherencia =====
+        if (!coherenciaSelect.value) { alert('Debe indicar si el punto auditado es coherente con los principios de las 5S (SI/NO).'); return false; }
+        // ===== FIN NUEVO =====
         return true;
       }
 
@@ -1029,6 +1068,10 @@
         fechaCorreccionInput.value = obtenerFechaActualLocal();
         responsableInput.value = '';
         observacionesInput.value = '';
+        // ===== NUEVO: limpiar coherencia y justificación =====
+        coherenciaSelect.value = '';
+        justificacionInput.value = '';
+        // ===== FIN NUEVO =====
         fotoCorreccionBase64 = null; fotoCorreccionNombre = ''; fotoCorreccionMime = '';
         photoPreviewCorreccion.classList.add('hidden'); previewImgCorreccion.src = ''; photoInputCorreccion.value = '';
         consecutivoInput.focus();
@@ -1071,15 +1114,20 @@
           correcciones.forEach((c, idx) => {
             const item = document.createElement('div');
             item.className = 'hallazgo-item correccion';
+            // ===== NUEVO: mostrar coherencia y justificación en la tarjeta =====
+            const coherenciaTexto = c.coherencia ? ` · Coherente: ${c.coherencia}` : '';
+            const justificacionTexto = c.justificacion ? `<p style="font-size:0.78rem; color:#555; margin-top:0.2rem;"><em>Justificación: ${c.justificacion}</em></p>` : '';
             item.innerHTML = `
               <div class="hallazgo-icon verde">${idx + 1}</div>
               <div class="hallazgo-content">
                 <span class="fecha-line">📅 ${formatearFechaVisible(c.fecha)}</span>
-                <strong>Cons. #${c.consecutivo} · ${c.responsable}</strong>
+                <strong>Cons. #${c.consecutivo} · ${c.responsable}${coherenciaTexto}</strong>
                 <p>${c.observaciones || 'Sin observaciones'}</p>
+                ${justificacionTexto}
               </div>
               ${c.fotoBase64 ? `<img class="hallazgo-img" src="${c.fotoBase64}" alt="Evidencia" />` : ''}
             `;
+            // ===== FIN NUEVO =====
             correccionesList.appendChild(item);
           });
         }
@@ -1110,6 +1158,10 @@
           fecha: fechaCorreccionInput.value,
           responsable: responsableInput.value.trim(),
           observaciones: observacionesInput.value.trim(),
+          // ===== NUEVO: guardar coherencia y justificación =====
+          coherencia: coherenciaSelect.value,
+          justificacion: justificacionInput.value.trim(),
+          // ===== FIN NUEVO =====
           fotoBase64: fotoCorreccionBase64, fotoNombre: fotoCorreccionNombre, fotoMime: fotoCorreccionMime
         });
         guardarCorreccionesEnStorage();
@@ -1181,6 +1233,9 @@
         ubicacionInput.value = ''; ubicacionCount.textContent = '0'; descripcionInput.value = '';
         auditorSelect.value = ''; areaSelect.value = ''; sSelect.value = '';
         consecutivoInput.value = ''; responsableInput.value = ''; observacionesInput.value = '';
+        // ===== NUEVO: limpiar coherencia y justificación =====
+        coherenciaSelect.value = ''; justificacionInput.value = '';
+        // ===== FIN NUEVO =====
         fechaInput.value = obtenerFechaActualLocal();
         fechaCorreccionInput.value = obtenerFechaActualLocal();
         alert('Datos limpiados correctamente. Puede comenzar una nueva auditoría o corrección.');
@@ -1304,6 +1359,10 @@
           { header: 'Fecha', key: 'fecha', width: 16 },
           { header: 'Responsable', key: 'responsable', width: 28 },
           { header: 'Observaciones', key: 'observaciones', width: 45 },
+          // ===== NUEVO: columnas de coherencia y justificación =====
+          { header: '¿Coherente con 5S?', key: 'coherencia', width: 18 },
+          { header: 'Justificación', key: 'justificacion', width: 45 },
+          // ===== FIN NUEVO =====
           { header: 'Foto Evidencia', key: 'foto', width: 25 }
         ];
         worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -1313,7 +1372,12 @@
           const c = correcciones[i];
           const row = worksheet.addRow({
             num: i + 1, consecutivo: c.consecutivo, fecha: formatearFechaVisible(c.fecha),
-            responsable: c.responsable, observaciones: c.observaciones || '', foto: ''
+            responsable: c.responsable, observaciones: c.observaciones || '',
+            // ===== NUEVO: valores de coherencia y justificación =====
+            coherencia: c.coherencia || '',
+            justificacion: c.justificacion || '',
+            // ===== FIN NUEVO =====
+            foto: ''
           });
           if (c.fotoBase64) {
             try {
@@ -1322,7 +1386,9 @@
               let extension = 'png';
               if (mime.includes('jpeg') || mime.includes('jpg')) extension = 'jpeg';
               const imageId = workbook.addImage({ base64: base64Data, extension: extension });
-              worksheet.addImage(imageId, { tl: { col: 5, row: i + 1 }, ext: { width: 80, height: 60 }, editAs: 'oneCell' });
+              // ===== NUEVO: la columna de foto ahora está en el índice 7 (0-based) =====
+              worksheet.addImage(imageId, { tl: { col: 7, row: i + 1 }, ext: { width: 80, height: 60 }, editAs: 'oneCell' });
+              // ===== FIN NUEVO =====
               worksheet.getRow(i + 2).height = 65;
             } catch (imgError) {
               row.getCell('foto').value = 'Error al cargar imagen';
@@ -1354,4 +1420,3 @@
   </script>
 </body>
 </html>
-```
